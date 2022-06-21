@@ -25,9 +25,10 @@ See the SSM docs for more information.
 
 %prep
 %setup -q -n %{name}
-tar -zxf qan-app-node_modules-1.12.0.tar.gz
-sed -i 's/"version": "v[0-9].[0-9].[0-9]"/"version": "v%{version}"/' package.json node_modules/package.json
+sed -i 's/"version": "v[0-9].[0-9].[0-9]"/"version": "v%{version}"/' package.json
 
+%build
+npm run build
 
 %install
 install -d %{buildroot}%{_datadir}/%{name}
