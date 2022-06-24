@@ -1,4 +1,4 @@
-import {OnDestroy} from '@angular/core';
+import {OnDestroy, Component} from '@angular/core';
 import {ParseQueryParamDatePipe} from '../shared/parse-query-param-date.pipe';
 import {Event, Router, ActivatedRoute, NavigationEnd} from '@angular/router';
 import * as moment from 'moment';
@@ -22,6 +22,9 @@ export interface QueryParams {
 /**
  * Base class for all components.
  */
+@Component({
+  template: ''
+})
 export abstract class CoreComponent implements OnDestroy {
 
   public isDemo = false;

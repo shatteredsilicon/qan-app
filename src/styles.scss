@@ -1310,11 +1310,22 @@ div.app-tooltip:hover::before {
 
 footer {
   height: 30px;
-  background: url(assets/pmm-logo.svg) no-repeat;
-  background-position-x: 97%;
-  background-size: 2%;
-  filter: invert(100%);
-  -webkit-filter: invert(100%);
+}
+
+footer .footer-div {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+footer .footer-logo {
+  height: 30px;
+  width: 30px;
+  margin-right: 8px;
+  background-image: url(assets/ssm-logo.png);
+  background-size: contain;
 }
 
 body {
