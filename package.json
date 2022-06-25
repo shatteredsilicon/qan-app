@@ -36,11 +36,12 @@
     "moment": "^2.24.0",
     "ngx-clipboard": "^12.2.0",
     "numeral": "2.0.6",
-    "renderjson": "github:caldwell/renderjson",
+    "renderjson": "git+https://github.com/caldwell/renderjson.git",
     "rxjs": "^6.5.2",
     "stream": "0.0.2",
     "tslib": "^1.10.0",
     "vkbeautify": "^0.99.3",
+    "webpack": "^5.73.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
