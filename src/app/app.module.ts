@@ -13,8 +13,12 @@ import { AddAmazonRDSComponent } from './add-amazon-rds/add-amazon-rds.component
 import { AddRemoteInstanceComponent } from './add-remote-instances/add-remote-instance.component';
 import { AddInstanceComponent } from './add-instance/add-instance.component';
 import {HttpClientModule} from '@angular/common/http';
+import { RDSService } from './core/rds.service';
 export function getInstances(instanceService: InstanceService) {
   return function () { return instanceService.getDBServers(); };
+}
+export function getRDS(rdsService: RDSService) {
+  return function () { return rdsService.getRDSInstances(); };
 }
 
 @NgModule({
@@ -39,6 +43,13 @@ export function getInstances(instanceService: InstanceService) {
       provide: APP_INITIALIZER,
       useFactory: getInstances,
       deps: [InstanceService],
+      multi: true
+    },
+    RDSService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: getRDS,
+      deps: [RDSService],
       multi: true
     }
   ],

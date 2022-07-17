@@ -7,6 +7,7 @@ import {environment} from '../environment';
 import {Subscription} from 'rxjs';
 import {Instance, InstanceService} from './instance.service';
 import {filter} from 'rxjs/operators';
+import { RDSInstance, RDSService } from './rds.service';
 
 export interface QueryParams {
   from?: string;
@@ -35,6 +36,7 @@ export abstract class CoreComponent implements OnDestroy {
   public dbServer: Instance | null;
   public dbServers: Array<Instance> = [];
   public dbServerMap: { [key: string]: Instance } = {};
+  public rdsInstances: Array<RDSInstance> = [];
   public from: any;
   public to: any;
   public isAllSelected: boolean;
@@ -46,12 +48,15 @@ export abstract class CoreComponent implements OnDestroy {
   parseQueryParamDatePipe = new ParseQueryParamDatePipe();
 
   constructor(protected route: ActivatedRoute, protected router: Router,
-              protected instanceService: InstanceService) {
+              protected instanceService: InstanceService,
+              protected rdsService: RDSService = null) {
     this.isDemo = environment.demoHosts.includes(location.hostname);
     this.dbServer = instanceService.dbServers[0];
     this.agent = instanceService.dbServers[0].Agent;
     this.dbServers = instanceService.dbServers;
     this.dbServerMap = instanceService.dbServerMap;
+    if (rdsService !== null)
+      this.rdsInstances = rdsService.rdsInstances;
     this.subscribeToRouter();
   }
 
