@@ -12,6 +12,7 @@ import { AddAmazonRDSComponent } from './add-amazon-rds/add-amazon-rds.component
 import { InstanceService } from './core/instance.service';
 import { AddRemoteInstanceComponent } from './add-remote-instances/add-remote-instance.component';
 import {RemoteInstancesListComponent} from './remote-instances-list/remote-instances-list.component';
+import { RDSService } from './core/rds.service';
 
 @Injectable()
 export class RegisteredInstanceGuard implements CanActivate {
@@ -30,6 +31,18 @@ export class RegisteredInstanceGuard implements CanActivate {
     }
 }
 
+@Injectable()
+export class RegisteredRDSGuard implements CanActivate {
+    private init: boolean;
+
+    constructor(public rdsService: RDSService, public router: Router) {
+        this.init = rdsService.init;
+    }
+    canActivate() {
+        return this.init;
+    }
+}
+
 const routes: Routes = [
     { path: '', redirectTo: 'profile', pathMatch: 'full', canActivate: [RegisteredInstanceGuard] },
     {
@@ -39,7 +52,7 @@ const routes: Routes = [
         ]
     },
     { path: 'sys-summary', component: SummaryComponent, pathMatch: 'full', canActivate: [RegisteredInstanceGuard] },
-    { path: 'settings', component: SettingsComponent, pathMatch: 'full', canActivate: [RegisteredInstanceGuard] },
+    { path: 'settings', component: SettingsComponent, pathMatch: 'full', canActivate: [RegisteredInstanceGuard, RegisteredRDSGuard] },
     { path: 'add-instance', component: AddInstanceComponent, pathMatch: 'full' },
     { path: 'add-amazon-rds', component: AddAmazonRDSComponent, pathMatch: 'full' },
     { path: 'add-remote-postgres', component: AddRemoteInstanceComponent, pathMatch: 'full' },
@@ -50,7 +63,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [RouterModule.forRoot(routes)],
-    providers: [RegisteredInstanceGuard],
+    providers: [RegisteredInstanceGuard, RegisteredRDSGuard],
     exports: [RouterModule]
 })
 export class AppRoutingModule { }

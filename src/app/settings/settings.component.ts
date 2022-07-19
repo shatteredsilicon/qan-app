@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import {SettingsService} from './settings.service';
 import {interval, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import { RDSService } from '../core/rds.service';
 
 @Component({
   moduleId: module.id,
@@ -36,11 +37,15 @@ export class SettingsComponent extends CoreComponent {
   isSuccess = false;
   isError = false;
 
+  public isRDS: boolean = false;
+
   constructor(protected route: ActivatedRoute, protected router: Router,
               protected settingsService: SettingsService,
-              protected instanceService: InstanceService) {
-    super(route, router, instanceService);
+              protected instanceService: InstanceService,
+              protected rdsService: RDSService) {
+    super(route, router, instanceService, rdsService);
     this.isDemo = environment.demoHosts.includes(location.hostname);
+    this.checkRDS();
   }
 
 
@@ -69,6 +74,11 @@ export class SettingsComponent extends CoreComponent {
     this.oldInterval = this.interval;
   }
 
+  checkRDS() {
+    this.isRDS = this.rdsService.rdsInstances && this.rdsService.rdsInstances.some(rdsInstance => rdsInstance.agent.qan_db_instance_uuid === this.dbServer.UUID)
+    console.log(this.dbServer.UUID, this.isRDS);
+  }
+
   /**
    * Get from agent:
    *  - Collect interval: positive intager;
@@ -80,7 +90,7 @@ export class SettingsComponent extends CoreComponent {
     try {
       this.agentConf = res;
       this.interval = (this.agentConf.qan.Interval / 60).toString();
-      this.collectFrom = this.agentConf.qan.CollectFrom;
+      this.collectFrom = this.agentConf.qan.CollectFrom === 'rds-slowlog' ? 'slowlog' : this.agentConf.qan.CollectFrom;
       this.exampleQueries = this.agentConf.qan.ExampleQueries;
     } catch (err) {
       console.error(err)
@@ -99,7 +109,7 @@ export class SettingsComponent extends CoreComponent {
       this.dbServer.UUID,
       +this.interval,
       this.exampleQueries,
-      this.collectFrom
+      this.collectFrom === 'slowlog' && this.isRDS ? 'rds-slowlog' : this.collectFrom
     );
     const visibleMessageTime = 5000;
     try {
@@ -151,5 +161,6 @@ export class SettingsComponent extends CoreComponent {
     this.getAgentDefaults();
     this.getAgentStatus();
     this.getAgentLog();
+    this.checkRDS();
   }
 }
