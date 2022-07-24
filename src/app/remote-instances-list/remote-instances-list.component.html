@@ -1,30 +1,61 @@
-<h3>Amazon RDS and remote instances</h3>
-<section class="grid-table">
-  <header class="grid-table__row">
-    <span>Name</span>
-    <span>Endpoint</span>
-    <div class="pointer" (click)="sortInstances('node.region')">
-      Region
-      <span *ngIf="!isSorted || !isRegion" class="fa fa-sort sort-icon" aria-hidden="true"></span>
-      <span *ngIf="isSorted && isRegion" [ngClass]="(order === 1) ? 'fa-sort-asc' : 'fa-sort-desc'" class="fa sort-icon"  aria-hidden="true"></span>
-    </div>
-    <div class="pointer" (click)="sortInstances('service.engine')">
-      Engine
-      <span *ngIf="!isSorted || isRegion" class="fa fa-sort sort-icon" aria-hidden="true"></span>
-      <span *ngIf="isSorted && !isRegion" [ngClass]="(order === 1) ? 'fa-sort-asc' : 'fa-sort-desc'" class="fa sort-icon"  aria-hidden="true"></span>
-    </div>
-    <span>Remove</span>
-  </header>
-  <div *ngFor="let instance of allInstances | sortingTable:path:order" class="grid-table__row">
-    <span>{{ instance.node.name }}</span>
-    <span>{{ instance.service.address }}:{{ instance.service.port }}</span>
-    <span>{{ instance.node.region }}</span>
-    <span>{{ instance.service.engine }} {{ instance.service.engine_version }}</span>
-    <span>
-      <span class="fa fa-trash-o" (click)="disableInstance(instance.node, instance.service)"></span>
-    </span>
-  </div>
-</section>
+<h3>Monitored Instances</h3>
+<table class="table table-striped instance-table">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Name</th>
+      <th>Services</th>
+      <th>Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template ngFor let-i="index" let-instance="$implicit" [ngForOf]="allInstances">
+      <tr style="height: 100%;">
+        <td>
+          <span *ngIf="instance.collapsed; else elseBlock" class="fa fa-chevron-right pointer" (click)="toggleCollapse(i)"></span>
+          <ng-template #elseBlock>
+            <span (click)="toggleCollapse(i)" class="fa fa-chevron-down pointer"></span>
+          </ng-template>
+        </td>
+        <td [attr.aria-expanded]="instance.collapsed">{{ instance.name }}</td>
+        <td>{{ instance.services?.length }}</td>
+        <td>
+          <span class="fa fa-trash-o instance-trash" (click)="disableInstance(i, instance)"></span>
+        </td>
+      </tr>
+      <tr #collapse="ngbCollapse" [(ngbCollapse)]="instance.collapsed">
+        <td colspan="4">
+          <table class="table instance-table subinstance-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Endpoint</th>
+                <th>Region</th>
+                <th>Engine</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-template ngFor let-i="index" let-service="$implicit" [ngForOf]="instance.services">
+                <tr>
+                  <td>{{ i+1 }}</td>
+                  <td>{{ service.type }}</td>
+                  <td>{{ service.address }}{{service.port ? ":"+service.port : ""}}</td>
+                  <td>{{ service.region }}</td>
+                  <td>{{ service.engine }} {{service.engine_version}}</td>
+                  <td>
+                    <span class="fa fa-trash pointer instance-trash" (click)="disableService(instance.name, service, i)"></span>
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </ng-template>
+  </tbody>
+</table>
 <div class="row justify-content-md-center" *ngIf="isLoading">
   <div>
     <i class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
