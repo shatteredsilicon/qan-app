@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {RemoteInstancesListService} from './remote-instances-list.service';
-import {RemoteInstance, RemoteInstanceNode, RemoteInstanceService} from '../add-remote-instances/add-remote-instance.service';
+import {RemoteInstancesListService, ClientRegion} from './remote-instances-list.service';
+import {NodeInstance, NodeInstanceService} from '../add-remote-instances/add-remote-instance.service';
 import {environment} from '../environment';
 import {AddAmazonRDSService} from '../add-amazon-rds/add-amazon-rds.service';
 
@@ -10,7 +10,7 @@ import {AddAmazonRDSService} from '../add-amazon-rds/add-amazon-rds.service';
   styleUrls: ['./remote-instances-list.component.scss']
 })
 export class RemoteInstancesListComponent implements OnInit {
-  public allInstances: RemoteInstance[] = [];
+  public allInstances: NodeInstance[] = [];
   public path: string[] = ['instance']; // same variable as for the loop that generates the table rows
   order = 1;
   isSorted = false;
@@ -28,6 +28,7 @@ export class RemoteInstancesListComponent implements OnInit {
     this.isLoading = true;
     try {
       this.allInstances = await this.remoteInstancesListService.getList();
+      this.allInstances?.forEach(instance => instance.collapsed = true);
     } catch (err) {
       this.errorMessage = err.json().error;
       this.isLoading = false;
@@ -37,20 +38,47 @@ export class RemoteInstancesListComponent implements OnInit {
     this.isLoading = false;
   }
 
-  async disableInstance(node: RemoteInstanceNode, service: RemoteInstanceService) {
+  async disableInstance(index: number, node: NodeInstance) {
     if (this.isDemo) {
       return false;
     }
     this.isLoading = false;
-    const text = `Are you sure you want to delete? ${node.name}`;
+    const text = `Are you sure you want to delete ${node.name}? This will delete all services and data of ${node.name}`;
     if (confirm(text)) {
       try {
-        if (service.type !== 'rds') {
-          const res = await this.remoteInstancesListService.disable(node, service);
-        } else {
-          const res = await this.awsService.disable(node);
+        const res = await this.remoteInstancesListService.disable(node);
+        this.allInstances.splice(index, 1);
+      } catch (err) {
+        this.errorMessage = err.json().error;
+        this.isLoading = false;
+        return;
+      }
+      this.errorMessage = !this.allInstances?.length ? 'The list of instances is empty' : '';
+      this.isLoading = false;
+    }
+  }
+
+  async disableService(node: string, service: NodeInstanceService, serviceIndex: number) {
+    if (this.isDemo) {
+      return false;
+    }
+
+    this.isLoading = false;
+    const text = `Are you sure you want to delete ${service.type} of ${node}?`;
+    if (confirm(text)) {
+      try {
+        const res = await this.remoteInstancesListService.disableService(node, service);
+        for (var i = 0; i < this.allInstances?.length; i++) {
+          if (this.allInstances[i].name != node) continue;
+
+          if (this.allInstances[i]?.services?.length > 1) {
+            this.allInstances[i].services.splice(serviceIndex, 1);
+          } else {
+           this.allInstances.splice(i, 1);
+          }
+
+          break
         }
-        this.allInstances = await this.remoteInstancesListService.getList();
       } catch (err) {
         this.errorMessage = err.json().error;
         this.isLoading = false;
@@ -66,5 +94,9 @@ export class RemoteInstancesListComponent implements OnInit {
     this.order = this.order * (-1); // change order
     this.isSorted = true;
     this.isRegion = prop === 'node.region';
+  }
+
+  public toggleCollapse(index: number) {
+    this.allInstances[index].collapsed = !this.allInstances[index].collapsed;
   }
 }

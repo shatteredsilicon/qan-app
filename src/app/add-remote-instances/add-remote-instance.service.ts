@@ -9,23 +9,20 @@ export interface RemoteInstanceCredentials {
   password: string;
 }
 
-export interface RemoteInstanceNode {
+export interface NodeInstanceService {
   id: number
-  name: string
-  region: string
-}
-
-export interface RemoteInstanceService {
   type: string;
+  region: string;
   address: string;
   port: number;
   engine: string;
   engine_version: string;
 }
 
-export interface RemoteInstance {
-  node: RemoteInstanceNode;
-  service: RemoteInstanceService;
+export interface NodeInstance {
+  name: string;
+  services: NodeInstanceService[];
+  collapsed: boolean;
 }
 
 @Injectable()
