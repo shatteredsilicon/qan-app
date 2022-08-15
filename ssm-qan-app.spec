@@ -15,7 +15,7 @@ License:	AGPLv3
 URL:		https://%{provider_prefix}
 Source0:	%{name}-%{version}.tar.gz
 
-BuildRequires:	nodejs
+BuildRequires:	nodejs npm
 Requires:	nginx
 
 %description
