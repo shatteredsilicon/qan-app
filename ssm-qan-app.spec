@@ -8,7 +8,7 @@
 
 Name:		ssm-qan-app
 Version:	%{_version}
-Release:	3%{?dist}
+Release:	1%{?dist}
 Summary:	Query Analytics API for SSM
 
 License:	AGPLv3
