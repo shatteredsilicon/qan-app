@@ -77,7 +77,7 @@ export class SummaryComponent extends CoreComponent {
     downloadSummary() {
         const momentFormatPipe = new MomentFormatPipe();
         const date = momentFormatPipe.transform(moment.utc(), 'YYYY-MM-DDTHH:mm:ss');
-        const filename = `pmm-${this.dbServer.Name}-${date}-summary.zip`;
+        const filename = `ssm-${this.dbServer.Name}-${date}-summary.zip`;
         const zip = new JSZip();
         zip.file('system_summary.txt', this.serverSummary);
         if (this.dbServer.Subsystem === 'mongo') {

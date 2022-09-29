@@ -13,13 +13,11 @@ import {DOCUMENT} from '@angular/common';
 export class AppComponent implements OnInit {
   title = 'Query Analytics';
   version = environment.version;
-  isDemo = false;
   hideNav = false;
   isInstancesListEmpty: boolean;
   theme = 'app-theme-light';
 
   constructor(instanceService: InstanceService, @Inject(DOCUMENT) private document) {
-    this.isDemo = environment.demoHosts.indexOf(location.hostname) > -1;
     // show message how to configure pmm-client.
     this.hideNav = this.inIframe() || instanceService.dbServers.length === 0;
   }

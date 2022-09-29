@@ -97,7 +97,7 @@
 
           <div class="row">
             <div class="col-12 d-flex align-items-center">
-              <button type="submit" [disabled]="isDemo" class="not-checked-button">Add instance</button>
+              <button type="submit" class="not-checked-button">Add instance</button>
               <div *ngIf="errorMessage && isSubmitted && addInstanceForm.valid">*{{ errorMessage }}</div>
               <div *ngIf="isSubmitted && !addInstanceForm.valid">Fields marked with an asterisk (*) are required</div>
               <div *ngIf="isLoading">

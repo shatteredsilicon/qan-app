@@ -17,11 +17,9 @@ export class AddAmazonRDSComponent implements OnInit {
   registeredNames: string[] = [];
   isLoading: boolean;
   errorMessage: string;
-  isDemo = false;
   submitted = false;
 
   constructor(public addAmazonRDSService: AddAmazonRDSService) {
-    this.isDemo = environment.demoHosts.includes(location.hostname);
   }
 
   async onSubmit() {
@@ -72,9 +70,6 @@ export class AddAmazonRDSComponent implements OnInit {
   }
 
   async disableInstanceMonitoring(node: RDSNode) {
-    if (this.isDemo) {
-      return false;
-    }
     this.errorMessage = '';
     const text = `Are you sure want to disable monitoring of '${node.name}:${node.region}' node?`;
     if (confirm(text)) {

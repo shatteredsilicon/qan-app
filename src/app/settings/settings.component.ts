@@ -33,7 +33,6 @@ export class SettingsComponent extends CoreComponent {
   ];
 
   public logPeriod = 12;
-  public isDemo = false;
   isSuccess = false;
   isError = false;
 
@@ -44,7 +43,6 @@ export class SettingsComponent extends CoreComponent {
               protected instanceService: InstanceService,
               protected rdsService: RDSService) {
     super(route, router, instanceService, rdsService);
-    this.isDemo = environment.demoHosts.includes(location.hostname);
     this.checkRDS();
   }
 

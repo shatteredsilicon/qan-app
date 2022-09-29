@@ -15,12 +15,10 @@ export class RemoteInstancesListComponent implements OnInit {
   order = 1;
   isSorted = false;
   isRegion = false;
-  isDemo = false;
   isLoading: boolean;
   errorMessage: string;
 
   constructor(private remoteInstancesListService: RemoteInstancesListService, private awsService: AddAmazonRDSService) {
-    this.isDemo = environment.demoHosts.includes(location.hostname);
   }
 
   async ngOnInit() {
@@ -39,9 +37,6 @@ export class RemoteInstancesListComponent implements OnInit {
   }
 
   async disableInstance(index: number, node: NodeInstance) {
-    if (this.isDemo) {
-      return false;
-    }
     this.isLoading = false;
     const text = `Are you sure you want to delete ${node.name}? This will delete all services and data of ${node.name}`;
     if (confirm(text)) {
@@ -59,10 +54,6 @@ export class RemoteInstancesListComponent implements OnInit {
   }
 
   async disableService(node: string, service: NodeInstanceService, serviceIndex: number) {
-    if (this.isDemo) {
-      return false;
-    }
-
     this.isLoading = false;
     const text = `Are you sure you want to delete ${service.type} of ${node}?`;
     if (confirm(text)) {
