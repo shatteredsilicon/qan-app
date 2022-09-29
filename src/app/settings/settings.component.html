@@ -79,7 +79,7 @@
 
               <div class="form-group row">
                 <div class="offset-sm-4 col-sm-8 p-0 button-block">
-                  <button id="settings_apply_button" [class.btn-copied]="isSuccess || isError" [disabled]="isDemo || interval === ''" type="submit" (click)="setAgentDefaults()"
+                  <button id="settings_apply_button" [class.btn-copied]="isSuccess || isError" [disabled]="interval === ''" type="submit" (click)="setAgentDefaults()"
                           class="pmm-button">
                     <i class="fa fa-check"></i>Apply
                   </button>

@@ -12,14 +12,12 @@ export class AddRemoteInstanceComponent implements OnInit {
 
   remoteInstanceCredentials = {} as RemoteInstanceCredentials;
   errorMessage: string;
-  isDemo = false;
   isLoading = false;
   isSubmitted = false;
   instanceType: string;
   currentUrl: string;
 
   constructor(public addRemoteInstanceService: AddRemoteInstanceService, private router: Router) {
-    this.isDemo = environment.demoHosts.includes(location.hostname);
     this.currentUrl = this.router.url;
   }
 

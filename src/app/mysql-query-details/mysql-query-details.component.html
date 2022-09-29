@@ -930,7 +930,7 @@
                id="dbTblNamesInput" [(ngModel)]="newDBTblNames"
                [ngModelOptions]="{standalone: true}"
                placeholder="`database-name`.`table-name`">
-        <button [disabled]="isDemo || !newDBTblNames" (click)="addDBTable();"
+        <button [disabled]="!newDBTblNames" (click)="addDBTable();"
                 class="search-button" type="submit">
           ADD
         </button>

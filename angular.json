@@ -53,14 +53,6 @@
                 }
               ]
             },
-            "demo": {
-              "fileReplacements": [
-                {
-                  "replace": "src/app/environment.ts",
-                  "with": "src/environments/environment.demo.ts"
-                }
-              ]
-            },
             "navless": {
               "fileReplacements": [
                 {
