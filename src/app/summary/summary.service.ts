@@ -105,7 +105,7 @@ export class SummaryService {
                     err += ' (Output: ' +  resp['Error'] + ')';
                 }
                 if (resp['Error'] === 'Unknown command: GetMongoSummary') {
-                    err = ' - Please update your `pmm-client`.';
+                    err = ' - Please update your `ssm-client`.';
                     err += ' (Output: ' +  resp['Error'] + ')';
                 }
                 throw new Error(err);
