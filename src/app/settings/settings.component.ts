@@ -31,6 +31,7 @@ export class SettingsComponent extends CoreComponent {
     'emerg', 'alert', 'crit', 'err',
     'warning', 'notice', 'info', 'debug'
   ];
+  public filterOmit: string;
 
   public logPeriod = 12;
   isSuccess = false;
@@ -90,6 +91,7 @@ export class SettingsComponent extends CoreComponent {
       this.interval = (this.agentConf.qan.Interval / 60).toString();
       this.collectFrom = this.agentConf.qan.CollectFrom === 'rds-slowlog' ? 'slowlog' : this.agentConf.qan.CollectFrom;
       this.exampleQueries = this.agentConf.qan.ExampleQueries;
+      this.filterOmit = this.agentConf.qan.FilterOmit ? this.agentConf.qan.FilterOmit.join(',') : '';
     } catch (err) {
       console.error(err)
     }
@@ -107,7 +109,8 @@ export class SettingsComponent extends CoreComponent {
       this.dbServer.UUID,
       +this.interval,
       this.exampleQueries,
-      this.collectFrom === 'slowlog' && this.isRDS ? 'rds-slowlog' : this.collectFrom
+      this.collectFrom === 'slowlog' && this.isRDS ? 'rds-slowlog' : this.collectFrom,
+      Boolean(this.filterOmit.trim()) ? this.filterOmit.split(',') : []
     );
     const visibleMessageTime = 5000;
     try {
