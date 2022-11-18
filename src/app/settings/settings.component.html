@@ -77,6 +77,21 @@
                 </div>
               </div>
 
+              <div *ngIf="dbServer.Subsystem === 'mysql'" class="form-group row">
+                <label for="inputInterval" class="col-sm-4 col-form-label">Filter Omit</label>
+                <div class="col-sm-6 p-0">
+                  <input
+                    placeholder="Queries to omit, split by comma"
+                    class="form-control"
+                    type="text"
+                    id="inputFilterOmit"
+                    name="filterOmit"
+                    [(ngModel)]="filterOmit"
+                    [ngModelOptions]="{standalone: true}"
+                  >
+                </div>
+              </div>
+
               <div class="form-group row">
                 <div class="offset-sm-4 col-sm-8 p-0 button-block">
                   <button id="settings_apply_button" [class.btn-copied]="isSuccess || isError" [disabled]="interval === ''" type="submit" (click)="setAgentDefaults()"

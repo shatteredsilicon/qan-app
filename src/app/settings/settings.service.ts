@@ -51,14 +51,15 @@ export class SettingsService {
     }
 
     public async setAgentDefaults(agentUUID: string, dbServerUUID: string, interval: number,
-        exampleQueries: boolean, collectFrom: CollectFrom): Promise<{}> {
+        exampleQueries: boolean, collectFrom: CollectFrom, filterOmit: Array<string>): Promise<{}> {
         const url = `/qan-api/agents/${agentUUID}/cmd`;
 
         const data = {
             UUID: dbServerUUID,
             Interval: interval * 60,
             ExampleQueries: exampleQueries,
-            CollectFrom: collectFrom
+            CollectFrom: collectFrom,
+            FilterOmit: filterOmit
         };
 
         const params = {
