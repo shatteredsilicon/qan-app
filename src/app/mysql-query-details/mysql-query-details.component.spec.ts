@@ -154,7 +154,9 @@ fdescribe('MySQLQueryDetailsComponent', () => {
             Table:
               'events_waits_summary_global_by_event_name'
           }
-        ]
+        ],
+        Procedures: [],
+        Views: []
       },
       Sparks2: [{Point: 1, Ts: '2018-06-12T13:49:53Z'}, {Point: 2, Ts: '2018-06-12T13:25:53Z'}],
     };
@@ -204,6 +206,8 @@ fdescribe('MySQLQueryDetailsComponent', () => {
       querySection: ['query-fingerprint, query-example'],
       explainSection: ['classic-explain, json-explain, visual-explain'],
       tableSection: ['table-create, table-status, table-indexes'],
+      procedureSection: ['procedure-create'],
+      viewSection: ['view-create']
     };
     fixture.detectChanges();
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -441,7 +445,7 @@ fdescribe('MySQLQueryDetailsComponent', () => {
 
   it('should display table spinner if data is loading', () => {
     component.indexTable = 'data';
-    component.isTableInfoLoading = true;
+    component.isQueryInfoLoading = true;
     fixture.detectChanges();
     const tableSpinner = fixture.nativeElement.querySelector('.table-spinner');
     expect(tableSpinner).toBeTruthy();
@@ -450,7 +454,7 @@ fdescribe('MySQLQueryDetailsComponent', () => {
   it('should not display table spinner if data is loaded', () => {
     component.isSummary = false;
     component.indexTable = 'data';
-    component.isTableInfoLoading = false;
+    component.isQueryInfoLoading = false;
     fixture.detectChanges();
     const tableSpinner = fixture.nativeElement.querySelector('.table-spinner');
     expect(tableSpinner).toBeFalsy();
@@ -459,7 +463,7 @@ fdescribe('MySQLQueryDetailsComponent', () => {
   it('should display error if index table error is presented', () => {
     component.isSummary = false;
     component.indexTable = 'data';
-    component.isTableInfoLoading = false;
+    component.isQueryInfoLoading = false;
     component.indexTableError = 'Error';
     fixture.detectChanges();
     const indexTableError = fixture.nativeElement.querySelector('.index-table-error');
@@ -469,7 +473,7 @@ fdescribe('MySQLQueryDetailsComponent', () => {
   it('should not display error if index table error is not presented', () => {
     component.isSummary = false;
     component.indexTable = 'data';
-    component.isTableInfoLoading = false;
+    component.isQueryInfoLoading = false;
     component.indexTableError = '';
     fixture.detectChanges();
     const indexTableError = fixture.nativeElement.querySelector('.index-table-error');
@@ -478,7 +482,7 @@ fdescribe('MySQLQueryDetailsComponent', () => {
 
   it('should display no data message', () => {
     component.indexTable = 'data';
-    component.isTableInfoLoading = false;
+    component.isQueryInfoLoading = false;
     component.indexTableError = '';
     component.tableInfo.Index.length = 0;
     fixture.detectChanges();

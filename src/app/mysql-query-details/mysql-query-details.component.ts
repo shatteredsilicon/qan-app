@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Instance, InstanceService } from '../core/instance.service';
 import { CoreComponent, QueryParams } from '../core/core.component';
-import { MySQLQueryDetailsService, QueryDetails, ServerSummary } from './mysql-query-details.service';
+import { MySQLQueryDetailsService, QueryDetails, ServerSummary, Table, DBObjectType, QueryInfo } from './mysql-query-details.service';
 import * as hljs from 'highlight.js';
 import * as vkbeautify from 'vkbeautify';
 import * as moment from 'moment';
 import {NgbAccordion, NgbAccordionConfig, NgbPanelChangeEvent} from '@ng-bootstrap/ng-bootstrap';
+import { stringify } from 'querystring';
 
 @Component({
   moduleId: module.id,
@@ -18,10 +19,17 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
 
   protected queryID: string;
   public queryDetails: QueryDetails;
+  public tables: Array<Table> = [];
+  public views: Array<Table> = [];
+  public queryInfo;
   public tableInfo;
+  public procedureInfo;
+  public viewInfo;
   public createTable: string;
   public statusTable;
   public indexTable;
+  public createProcedure: string;
+  public createView: string;
   public fingerprint: string;
   public queryExample: string;
   public classicExplain;
@@ -31,7 +39,11 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
   public dataExplain;
   public dbName: string;
   public dbTblNames: string;
+  public dbProcedureNames: string;
+  public dbViewNames: string;
   protected newDBTblNames: string;
+  protected newDBProcedureNames: string;
+  protected newDBViewNames: string;
   isSummary: boolean;
   isLoading: boolean;
   isExplainLoading: boolean;
@@ -40,9 +52,11 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     queryExample: false,
     fingerprint: false,
     createTable: false,
-    jsonExplain: false
+    jsonExplain: false,
+    createProcedure: false,
+    createView: false
   };
-  isTableInfoLoading: boolean;
+  isQueryInfoLoading: boolean;
   isFirstSeen: boolean;
   firstSeen: string;
   lastSeen: string;
@@ -51,6 +65,8 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     querySection: ['query-fingerprint'],
     explainSection: ['classic-explain'],
     tableSection: ['table-create'],
+    procedureSection: ['procedure-create'],
+    viewSection: ['view-create']
   };
 
   createTableError: string;
@@ -59,6 +75,8 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
   jsonExplainError: string;
   classicExplainError: string;
   visualExplainError: string;
+  createProcedureError: string;
+  createViewError: string;
   event = new Event('showSuccessNotification');
 
   constructor(protected route: ActivatedRoute,
@@ -92,6 +110,8 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
         querySection: ['query-fingerprint'],
         explainSection: ['classic-explain'],
         tableSection: ['table-create'],
+        procedureSection: ['procedure-create'],
+        viewSection: ['view-create']
       };
       this.getQueryDetails(this.dbServer.UUID, this.queryParams.queryID, this.fromUTCDate, this.toUTCDate);
     }
@@ -109,6 +129,12 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
   async getQueryDetails(dbServerUUID, queryID, from, to: string) {
     this.isLoading = true;
     this.dbName = this.dbTblNames = '';
+    this.dbProcedureNames = '';
+    this.dbViewNames = '';
+    this.tables = [];
+    this.views = [];
+    this.statusTable = this.indexTable = this.createTable = this.createProcedure = this.createView = '';
+    this.statusTableError = this.indexTableError = this.createTableError = this.createProcedureError = this.createViewError = '';
     this.queryExample = '';
     try {
       this.queryDetails = await this.queryDetailsService.getQueryDetails(dbServerUUID, queryID, from, to);
@@ -124,7 +150,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       if (this.queryExample) {
         this.getExplain();
       }
-      this.getTableInfo()
+      this.getQueryInfo()
     } catch (err) {
       console.error(err);
     }
@@ -149,7 +175,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     this.jsonExplainError = '';
     this.visualExplainError = '';
     if (this.dbName === '') {
-      this.dbName = this.getDBName();
+      [ this.dbName ] = this.defaultTable();
     }
     const query = this.queryDetails.Example.Query;
     // https://github.com/percona/go-mysql/blob/master/event/class.go#L25
@@ -187,90 +213,130 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     this.isExplainLoading = false;
   }
 
-  getTableInfo() {
+  getQueryInfo() {
     if (!this.dbServer || !this.dbServer.Agent) { return; }
-    this.isTableInfoLoading = true;
+
+    this.isQueryInfoLoading = true;
     const agentUUID = this.dbServer.Agent.UUID;
     const dbServerUUID = this.dbServer.UUID;
-    this.statusTableError = '';
-    this.indexTableError = '';
-    this.createTableError = '';
-    let dbName, tblName: string;
-    if (this.dbTblNames === '') {
-      dbName = this.getDBName();
-      tblName = this.getTableName();
-      this.dbTblNames = `\`${dbName}\`.\`${tblName}\``;
-    } else {
-      const parts = this.dbTblNames.split('.');
-      dbName = parts[0].replace(/`/g, '');
-      tblName = parts[1].replace(/`/g, '');
-    }
 
-    this.queryDetailsService.getTableInfo(agentUUID, dbServerUUID, dbName, tblName)
+    this.queryDetailsService.getQueryInfo(
+      agentUUID,
+      dbServerUUID,
+      this.queryDetails.Query.Tables ? this.queryDetails.Query.Tables : [],
+      this.queryDetails.Query.Procedures ? this.queryDetails.Query.Procedures : []
+    )
       .then(data => {
-        const info = data[`${dbName}.${tblName}`];
-        this.tableInfo = info;
-        this.statusTable = info.Status;
-        this.indexTable = info.Index;
-        try {
-          this.createTable = hljs.highlight('sql', this.tableInfo.Create).value;
-        } catch (e) { }
-        if (info.hasOwnProperty('Errors') && info['Errors'].length > 0) {
-          throw info['Errors'];
-        }
-      })
-      .catch(errors => {
-        for (const err of errors) {
-          if (err.startsWith('SHOW TABLE STATUS')) {
-            this.statusTableError = err;
-          }
-          if (err.startsWith('SHOW INDEX FROM')) {
-            this.indexTableError = err;
-          }
-          if (err.startsWith('SHOW CREATE TABLE')) {
-            this.createTableError = err;
-          }
-        }
+        this.queryInfo = data as Map<string, any>;
+        this.tables = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBTable);
+        this.views = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBView);
 
+        this.selectTableInfo('', '');
+        this.selectProcedureInfo('', '');
+        this.selectViewInfo('', '');
       })
-      .then(() => this.isTableInfoLoading = false);
+      .finally(() => {
+        this.isQueryInfoLoading = false
+      })
   }
 
   selectTableInfo(dbName: string, tblName: string) {
     if (!this.dbServer || !this.dbServer.Agent) { return; }
-    this.isTableInfoLoading = true;
+
     this.statusTableError = '';
     this.indexTableError = '';
     this.createTableError = '';
-    const agentUUID = this.dbServer.Agent.UUID;
-    const dbServerUUID = this.dbServer.UUID;
+
+    let db: string, name: string;
+    if (dbName === '' || tblName === '') {
+      [ db, name ] = this.defaultTable();
+      if (dbName === '') dbName = db;
+      if (tblName === '') tblName = name;
+    }
     this.dbTblNames = `\`${dbName}\`.\`${tblName}\``;
 
+    const info = this.queryInfo && (this.queryInfo[`${dbName}.${tblName}`] as QueryInfo);
+    if (!info) return;
 
-    this.queryDetailsService.getTableInfo(agentUUID, dbServerUUID, dbName, tblName)
-      .then(data => {
-        const info = data[`${dbName}.${tblName}`];
-        if (info.hasOwnProperty('Errors') && info['Errors'].length > 0) {
-          throw info['Errors'];
-        }
-        this.tableInfo = info;
-        this.createTable = hljs.highlight('sql', this.tableInfo.Create).value;
-      })
-      .catch(errors => {
-        for (const err of errors) {
-          if (err.startsWith('SHOW TABLE STATUS')) {
-            this.statusTableError = err;
-          }
-          if (err.startsWith('SHOW INDEX FROM')) {
-            this.indexTableError = err;
-          }
-          if (err.startsWith('SHOW CREATE TABLE')) {
-            this.createTableError = err;
-          }
-        }
+    this.tableInfo = info;
+    this.statusTable = info.Status;
+    this.indexTable = info.Index;
+    try {
+      this.createTable = hljs.highlight('sql', info.Create).value;
+    } catch (e) { }
 
-      })
-      .then(() => this.isTableInfoLoading = false);
+    if (info.hasOwnProperty('Errors') && info['Errors'].length > 0) {
+      for (const err of info['Errors']) {
+        if (err.startsWith('SHOW TABLE STATUS')) {
+          this.statusTableError = err;
+        }
+        if (err.startsWith('SHOW INDEX FROM')) {
+          this.indexTableError = err;
+        }
+        if (err.startsWith('SHOW CREATE TABLE')) {
+          this.createTableError = err;
+        }
+      }
+    }
+  }
+
+  selectProcedureInfo(dbName: string, procedureName: string) {
+    if (!this.dbServer || !this.dbServer.Agent) { return; }
+
+    this.createProcedureError = '';
+
+    let db: string, name: string;
+    if (dbName === '' || procedureName === '') {
+      [db, name] = this.defaultProcedure();
+      if (dbName === '') dbName = db;
+      if (procedureName === '') procedureName = name;
+    }
+    this.dbProcedureNames = `\`${dbName}\`.\`${procedureName}\``;
+
+    const info = this.queryInfo && (this.queryInfo[`${dbName}.${procedureName}`] as QueryInfo);
+    if (!info) return;
+    this.procedureInfo = info;
+    try {
+      this.createProcedure = hljs.highlight('sql', info.Create).value;
+    } catch (e) { }
+
+    if (info.hasOwnProperty('Errors') && info['Errors'].length > 0) {
+      for (const err of info['Errors']) {
+        if (err.startsWith('SHOW CREATE PROCEDURE')) {
+          this.createProcedureError = err;
+        }
+      }
+    }
+  }
+
+  selectViewInfo(dbName: string, viewName: string) {
+    if (!this.dbServer || !this.dbServer.Agent) { return; }
+
+    this.createViewError = '';
+
+    let db: string, name: string;
+    if (dbName === '' || viewName === '') {
+      [db, name] = this.defaultView();
+      if (dbName === '') dbName = db;
+      if (viewName === '') viewName = name;
+    }
+    this.dbViewNames = `\`${dbName}\`.\`${viewName}\``;
+
+    const info = this.queryInfo && (this.queryInfo[`${dbName}.${viewName}`] as QueryInfo);
+    if (!info) return;
+
+    this.viewInfo = info;
+    try {
+      this.createView = hljs.highlight('sql', info.Create).value;
+    } catch (e) { }
+
+    if (info.Errors?.length > 0) {
+      for (const err of info.Errors) {
+        if (err.startsWith('SHOW CREATE TABLE')) {
+          this.createViewError = err;
+        }
+      }
+    }
   }
 
   addDBTable() {
@@ -284,14 +350,83 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       this.queryDetails.Query.Tables.push({Db: db, Table: tbl});
       this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
       this.dbTblNames = this.newDBTblNames;
-      this.getTableInfo();
+      this.queryDetailsService.getQueryInfo(
+        this.dbServer.Agent.UUID,
+        this.dbServer.UUID,
+        [{ Db: db, Table: tbl }],
+        []
+      )
+        .then(data => {
+          data && Object.keys(data).forEach(k => {
+            this.queryInfo[k] = data[k];
+          })
+          this.tables = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBTable);
+          this.selectTableInfo(db, tbl);
+        })
       this.newDBTblNames = '';
     }
     return false;
   }
 
+  addDBProcedure() {
+    if (this.newDBProcedureNames.length > 6) {
+      const part = this.newDBProcedureNames.split('.');
+      const db = part[0].replace(/`/g, '');
+      const name = part[1].replace(/`/g, '');
+      if (this.queryDetails.Query.Procedures === null) {
+        this.queryDetails.Query.Procedures = [];
+      }
+      this.queryDetails.Query.Procedures.push({ DB: db, Name: name });
+      this.queryDetailsService.updateProcedures(this.queryDetails.Query.Id, this.queryDetails.Query.Procedures);
+      this.dbProcedureNames = this.newDBProcedureNames;
+      this.queryDetailsService.getQueryInfo(
+        this.dbServer.Agent.UUID,
+        this.dbServer.UUID,
+        [],
+        [{ DB: db, Name: name }]
+      )
+        .then(data => {
+          data && Object.keys(data).forEach(k => {
+            this.queryInfo[k] = data[k];
+          })
+          this.selectProcedureInfo(db, name);
+        })
+      this.newDBProcedureNames = '';
+    }
+    return false;
+  }
+
+  addDBView() {
+    if (this.newDBViewNames.length > 6) {
+      const part = this.newDBViewNames.split('.');
+      const db = part[0].replace(/`/g, '');
+      const name = part[1].replace(/`/g, '');
+      if (this.queryDetails.Query.Tables === null) {
+        this.queryDetails.Query.Tables = [];
+      }
+      this.queryDetails.Query.Tables.push({ Db: db, Table: name });
+      this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
+      this.dbViewNames = this.newDBViewNames;
+      this.queryDetailsService.getQueryInfo(
+        this.dbServer.Agent.UUID,
+        this.dbServer.UUID,
+        [{ Db: db, Table: name }],
+        []
+      )
+        .then(data => {
+          data && Object.keys(data).forEach(k => {
+            this.queryInfo[k] = data[k];
+          })
+          this.views = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBView);
+          this.selectViewInfo(db, name);
+        })
+      this.newDBViewNames = '';
+    }
+    return false;
+  }
+
   removeDBTable(dbTableItem) {
-    const len = this.queryDetails.Query.Tables.length;
+    const len = this.queryDetails.Query.Tables?.length;
     for (let i = 0; i < len; i++) {
       try {
         if (this.queryDetails.Query.Tables[i].Db === dbTableItem.Db
@@ -303,31 +438,97 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       }
     }
     this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
+    this.tables = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBTable);
+  }
+
+  removeDBProcedure(dbProcedureItem) {
+    const len = this.queryDetails.Query.Procedures?.length;
+    for (let i = 0; i < len; i++) {
+      try {
+        if (this.queryDetails.Query.Procedures[i].DB === dbProcedureItem.DB
+          && this.queryDetails.Query.Procedures[i].Name === dbProcedureItem.Name) {
+          this.queryDetails.Query.Procedures.splice(i, 1);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    this.queryDetailsService.updateProcedures(this.queryDetails.Query.Id, this.queryDetails.Query.Procedures);
+  }
+
+  removeDBView(dbTableItem) {
+    const len = this.queryDetails.Query.Tables?.length;
+    for (let i = 0; i < len; i++) {
+      try {
+        if (this.queryDetails.Query.Tables[i].Db === dbTableItem.Db
+          && this.queryDetails.Query.Tables[i].Table === dbTableItem.Table) {
+          this.queryDetails.Query.Tables.splice(i, 1);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
+    this.views = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBView);
   }
 
   isSelectedDbTbl(item): boolean {
     return `\`${item.Db}\`.\`${item.Table}\`` === this.dbTblNames;
   }
 
-  getTableName(): string {
-    if (this.queryDetails.hasOwnProperty('Query')
-      && this.queryDetails.Query.hasOwnProperty('Tables')
-      && this.queryDetails.Query.Tables !== null
-      && this.queryDetails.Query.Tables.length > 0) {
-      return this.queryDetails.Query.Tables[0].Table;
-    }
-    return '';
+  isSelectedDbProcedure(item): boolean {
+    return `\`${item.DB}\`.\`${item.Name}\`` === this.dbProcedureNames;
   }
 
-  private getDBName(): string {
+  isSelectedDbView(item): boolean {
+    return `\`${item.Db}\`.\`${item.Table}\`` === this.dbViewNames;
+  }
+
+  private defaultTable(): [string, string] {
+    var db: string, name: string;
+    
     if (this.queryDetails.Example.Db !== '') {
-      return this.queryDetails.Example.Db;
-    } else if (this.queryDetails.hasOwnProperty('Query')
-      && this.queryDetails.Query.hasOwnProperty('Tables')
-      && this.queryDetails.Query.Tables !== null
-      && this.queryDetails.Query.Tables.length > 0) {
-      return this.queryDetails.Query.Tables[0].Db;
+      db = this.queryDetails.Example.Db;
     }
-    return '';
+    
+    if (this.tables?.length > 0) {
+      if (!db) db = this.tables[0].Db;
+      name = this.tables[0].Table;
+    }
+
+    return [db, name];
+  }
+
+  private defaultProcedure(): [string, string] {
+    var db: string, name: string;
+
+    if (this.queryDetails.Example.Db !== '') {
+      db = this.queryDetails.Example.Db;
+    }
+
+    if (this.queryDetails.hasOwnProperty('Query')
+      && this.queryDetails.Query.hasOwnProperty('Procedures')
+      && this.queryDetails.Query.Procedures !== null
+      && this.queryDetails.Query.Procedures.length > 0) {
+      if (!db) db = this.queryDetails.Query.Procedures[0].DB;
+      name = this.queryDetails.Query.Procedures[0].Name;
+    }
+
+    return [db, name];
+  }
+
+  private defaultView(): [string, string] {
+    var db: string, name: string;
+
+    if (this.queryDetails.Example.Db !== '') {
+      db = this.queryDetails.Example.Db;
+    }
+
+    if (this.views?.length > 0) {
+      if (!db) db = this.views[0].Db;
+      name = this.views[0].Table;
+    }
+
+    return [db, name];
   }
 }

@@ -936,8 +936,8 @@
         </button>
       </form>
     </header>
-    <section class="table-buttons-wrapper">
-      <div *ngFor="let item of queryDetails?.Query?.Tables" class="btn-group" role="group" aria-label="Tables">
+    <section class="item-buttons-wrapper">
+      <div *ngFor="let item of tables" class="btn-group" role="group" aria-label="Tables">
         <button type="button" class="btn-tables" (click)="selectTableInfo(item.Db, item.Table);"
                 [ngClass]="isSelectedDbTbl(item) ? 'checked' : ''">
           `{{ item.Db }}`.`{{ item.Table }}`
@@ -955,15 +955,15 @@
           </div>
         </ng-template>
         <ng-template ngbPanelContent>
-          <i *ngIf="isTableInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
-          <div class="data-output" *ngIf="!isTableInfoLoading && createTableError">
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && createTableError">
             <div class="alert alert-warning w-75 mx-auto m-2"
                  role="alert">
               <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
               {{ createTableError }}
             </div>
           </div>
-          <div class="data-output" *ngIf="!isTableInfoLoading && !createTableError">
+          <div class="data-output" *ngIf="!isQueryInfoLoading && !createTableError">
             <pre><code [innerHTML]="createTable"></code></pre>
             <button class="pmm-button"
                     id="copyCreateTable"
@@ -983,13 +983,13 @@
           </div>
         </ng-template>
         <ng-template ngbPanelContent class="accordion-inner-table">
-          <i *ngIf="isTableInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
-          <div *ngIf="!isTableInfoLoading && !!statusTableError" class="alert alert-warning w-75 mx-auto m-2"
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div *ngIf="!isQueryInfoLoading && !!statusTableError" class="alert alert-warning w-75 mx-auto m-2"
                role="alert">
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
             {{ statusTableError }}
           </div>
-          <div class="table-wrapper status-table-wrapper" *ngIf="!isTableInfoLoading && !statusTableError">
+          <div class="table-wrapper status-table-wrapper" *ngIf="!isQueryInfoLoading && !statusTableError">
             <div class="table-header grid-container table-header-row">
               <div>Name</div>
               <div>Value</div>
@@ -1018,14 +1018,14 @@
           </div>
         </ng-template>
         <ng-template ngbPanelContent class="accordion-inner-table">
-          <i *ngIf="isTableInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading table-spinner"></i>
-          <div *ngIf="!isTableInfoLoading && !!indexTableError"
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading table-spinner"></i>
+          <div *ngIf="!isQueryInfoLoading && !!indexTableError"
                class="alert alert-warning w-75 mx-auto m-2 index-table-error"
                role="alert">
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
             {{ indexTableError }}
           </div>
-          <div class="table-wrapper indexes-table" *ngIf="!isTableInfoLoading && !indexTableError">
+          <div class="table-wrapper indexes-table" *ngIf="!isQueryInfoLoading && !indexTableError">
             <div class="table-header grid-container table-header-row">
               <div>KeyName</div>
               <div>Type</div>
@@ -1061,6 +1061,108 @@
               </div>
               <div *ngIf="tableInfo?.Index?.length === 0" class="no-data">No data.</div>
             </div>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </section>
+
+  <section class="procedures"
+    *ngIf="!!createProcedure || !!createProcedureError">
+    <header class="section-title">
+      <h3>PROCEDURES</h3>
+      <form class="search-input tables-input" (submit)="addDBProcedure();">
+        <label for="dbProcedureNamesInput" style="white-space: nowrap;">DB and name</label>
+        <input type="text" size="50" class="form-control" id="dbProcedureNamesInput" [(ngModel)]="newDBProcedureNames"
+          [ngModelOptions]="{standalone: true}" placeholder="`database`.`procedure`">
+        <button [disabled]="!newDBProcedureNames" (click)="addDBProcedure();" class="search-button" type="submit">
+          ADD
+        </button>
+      </form>
+    </header>
+    <section class="item-buttons-wrapper">
+      <div *ngFor="let item of queryDetails?.Query?.Procedures" class="btn-group" role="group" aria-label="Procedures">
+        <button type="button" class="btn-tables" (click)="selectProcedureInfo(item.DB, item.Name);"
+          [ngClass]="isSelectedDbProcedure(item) ? 'checked' : ''">
+          `{{ item.DB }}`.`{{ item.Name }}`
+        </button>
+        <button type="button" class="btn-tables btn-tables-remove" (click)="removeDBProcedure(item);">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+    </section>
+    <ngb-accordion [activeIds]="accordionIds.procedureSection">
+      <ngb-panel id="procedure-create" *ngIf="!!createProcedure || !!createProcedureError">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>CREATE</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && createProcedureError">
+            <div class="alert alert-warning w-75 mx-auto m-2" role="alert">
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              {{ createProcedureError }}
+            </div>
+          </div>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && !createProcedureError">
+            <pre><code [innerHTML]="createProcedure"></code></pre>
+            <button class="pmm-button" id="copyCreateProcedure" ngxClipboard [cbContent]="procedureInfo.Create"
+              (cbOnSuccess)="showSuccessNotification('createProcedure')" [class.btn-copied]="isCopied.createProcedure">Copy to
+              clipboard
+            </button>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </section>
+
+  <section class="views" *ngIf="!!createView || !!createViewError">
+    <header class="section-title">
+      <h3>VIEWS</h3>
+      <form class="search-input tables-input" (submit)="addDBView();">
+        <label for="dbViewNamesInput" style="white-space: nowrap;">DB and name</label>
+        <input type="text" size="50" class="form-control" id="dbViewNamesInput" [(ngModel)]="newDBViewNames"
+          [ngModelOptions]="{standalone: true}" placeholder="`database-name`.`view-name`">
+        <button [disabled]="!newDBViewNames" (click)="addDBView();" class="search-button" type="submit">
+          ADD
+        </button>
+      </form>
+    </header>
+    <section class="item-buttons-wrapper">
+      <div *ngFor="let item of views" class="btn-group" role="group" aria-label="Views">
+        <button type="button" class="btn-tables" (click)="selectViewInfo(item.Db, item.Table);"
+          [ngClass]="isSelectedDbView(item) ? 'checked' : ''">
+          `{{ item.Db }}`.`{{ item.Table }}`
+        </button>
+        <button type="button" class="btn-tables btn-tables-remove" (click)="removeDBView(item);">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+    </section>
+    <ngb-accordion [activeIds]="accordionIds.viewSection">
+      <ngb-panel id="view-create" *ngIf="!!createView || !!createViewError">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>CREATE</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && createViewError">
+            <div class="alert alert-warning w-75 mx-auto m-2" role="alert">
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              {{ createViewError }}
+            </div>
+          </div>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && !createViewError">
+            <pre><code [innerHTML]="createView"></code></pre>
+            <button class="pmm-button" id="copyCreateView" ngxClipboard [cbContent]="viewInfo.Create"
+              (cbOnSuccess)="showSuccessNotification('createView')"
+              [class.btn-copied]="isCopied.createView">Copy to
+              clipboard
+            </button>
           </div>
         </ng-template>
       </ngb-panel>
