@@ -1,11 +1,36 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
+export enum DBObjectType {
+  TypeDBTable = 0,
+  TypeDBProcedure,
+  TypeDBView
+}
+
+export interface Table {
+  Db: string
+  Table: string
+}
+
+export interface Procedure {
+  DB: string
+  Name: string
+}
+
+export interface QueryInfo {
+  Type: DBObjectType
+  Create: string
+  Status: any
+  Index: any
+  Errors: Array<string>
+}
+
 export interface QueryClass {
   Id: string;
   Abstract: string;
   Fingerprint: string;
-  Tables: Array<{ Db: string, Table: string }> | null;
+  Tables: Array<Table> | null;
+  Procedures: Array<Procedure> | null;
   FirstSeen: string;
   LastSeen: string;
   Status: string;
@@ -72,29 +97,21 @@ export class MySQLQueryDetailsService {
     return response as ServerSummary;
   }
 
-  getTableInfo(agentUUID: string, dbServerUUID: string, dbName: string, tblName: string) {
+  getQueryInfo(agentUUID: string, dbServerUUID: string, tables: Array<Table>, procedures: Array<Procedure>) {
     const url = `/qan-api/agents/${agentUUID}/cmd`;
 
     const data = {
       UUID: dbServerUUID,
-      Create: [{
-        Db: dbName,
-        Table: tblName
-      }],
-      Index: [{
-        Db: dbName,
-        Table: tblName
-      }],
-      Status: [{
-        Db: dbName,
-        Table: tblName
-      }]
+      Table: tables,
+      Index: tables,
+      Status: tables,
+      Procedure: procedures,
     };
 
     const params = {
       AgentUUID: agentUUID,
       Service: 'query',
-      Cmd: 'TableInfo',
+      Cmd: 'QueryInfo',
       Data: btoa(JSON.stringify(data))
     };
 
@@ -130,6 +147,14 @@ export class MySQLQueryDetailsService {
     const url = `/qan-api/queries/${queryID}/tables`;
     return this.httpClient
       .put(url, dbTables)
+      .toPromise()
+      .then(resp => console.log(resp));
+  }
+
+  updateProcedures(queryID: string, dbProcedures: Array<Procedure>) {
+    const url = `/qan-api/queries/${queryID}/procedures`;
+    return this.httpClient
+      .put(url, dbProcedures)
       .toPromise()
       .then(resp => console.log(resp));
   }
