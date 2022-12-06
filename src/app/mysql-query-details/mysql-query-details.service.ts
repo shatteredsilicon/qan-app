@@ -25,6 +25,11 @@ export interface QueryInfo {
   Errors: Array<string>
 }
 
+export interface QueryInfoResult {
+  GuessDB: GuessDB | null;
+  Info: Map<string, QueryInfo> | null;
+}
+
 export interface QueryClass {
   Id: string;
   Abstract: string;
@@ -45,6 +50,11 @@ export interface QueryExample {
   QueryTime: number;
   Query: string;
 };
+
+export interface GuessDB {
+  DB: string;
+  IsAmbiguous: boolean;
+}
 
 export interface QueryDetails {
   InstanceId: string;
@@ -118,7 +128,7 @@ export class MySQLQueryDetailsService {
     return this.httpClient
       .put(url, params)
       .toPromise()
-      .then(response => JSON.parse(atob(response['Data'])));
+      .then(response => JSON.parse(atob(response['Data'])) as QueryInfoResult);
   }
 
   getExplain(agentUUID: string, dbServerUUID: string, dbName: string, query: string) {
