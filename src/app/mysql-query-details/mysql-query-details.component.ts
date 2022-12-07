@@ -192,7 +192,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
 
     try {
       // let data = await this.queryDetailsService.getExplain(agentUUID, dbServerUUID, this.dbName, query);
-      this.dataExplain = await this.queryDetailsService.getExplain(agentUUID, dbServerUUID, this.dbName, query);
+      this.dataExplain = await this.queryDetailsService.getExplain(agentUUID, dbServerUUID, this.dbName, query, this.queryDetails.Example.Explain);
       if (this.dataExplain.hasOwnProperty('Error') && this.dataExplain['Error'] !== '') {
         throw new Error(this.dataExplain['Error']);
       }

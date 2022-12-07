@@ -41,6 +41,22 @@ export interface QueryClass {
   Status: string;
 };
 
+export interface ExplainRow {
+  Id:           number | null;
+  SelectType:   string | null;
+  Table:        string | null;
+  Partitions:   string | null;
+  CreateTable:  string | null;
+  Type:         string | null;
+  PossibleKeys: string | null;
+  Key:          string | null;
+  KeyLen:       string | null;
+  Ref:          string | null;
+  Rows:         number | null;
+  Filtered:     number | null;
+  Extra:        string | null;
+}
+
 export interface QueryExample {
   QueryId: string;
   InstanceUUID: string;
@@ -49,6 +65,7 @@ export interface QueryExample {
   Db: string;
   QueryTime: number;
   Query: string;
+  Explain: string;
 };
 
 export interface GuessDB {
@@ -131,13 +148,14 @@ export class MySQLQueryDetailsService {
       .then(response => JSON.parse(atob(response['Data'])) as QueryInfoResult);
   }
 
-  getExplain(agentUUID: string, dbServerUUID: string, dbName: string, query: string) {
+  getExplain(agentUUID: string, dbServerUUID: string, dbName: string, query: string, withExplain: string) {
     const url = `/qan-api/agents/${agentUUID}/cmd`;
     const data = {
       UUID: dbServerUUID,
       Db: dbName,
       Query: query,
-      Convert: true  // agent will convert if not SELECT and MySQL <= 5.5 or >= 5.6 but no privs
+      Convert: true,  // agent will convert if not SELECT and MySQL <= 5.5 or >= 5.6 but no privs
+      WithExplainRows: withExplain ? JSON.parse(withExplain) as ExplainRow[] : []
     };
 
     const params = {
