@@ -243,6 +243,11 @@ table.metrics td span.sum {
         content: "\f054";
       }
     }
+
+    p {
+      margin-bottom: 0 !important;
+      margin-left: 0.5rem;
+    }
   }
 }
 
