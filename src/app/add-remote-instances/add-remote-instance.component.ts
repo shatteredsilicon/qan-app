@@ -3,6 +3,26 @@ import {AddRemoteInstanceService, RemoteInstanceCredentials} from './add-remote-
 import {environment} from '../environment';
 import {Router} from '@angular/router';
 
+const instanceMap: {
+  [key: string]: {
+    name: string
+    port: number
+  }
+} = {
+  postgresql: {
+    name: 'PostgreSQL',
+    port: 5432
+  },
+  mysql: {
+    name: 'MySQL',
+    port: 3306
+  },
+  snmp: {
+    name: 'SNMP',
+    port: 161
+  }
+}
+
 @Component({
   selector: 'app-add-remote-postgres',
   templateUrl: './add-remote-instance.component.html',
@@ -10,12 +30,22 @@ import {Router} from '@angular/router';
 })
 export class AddRemoteInstanceComponent implements OnInit {
 
-  remoteInstanceCredentials = {} as RemoteInstanceCredentials;
+  remoteInstanceCredentials = {
+    snmpVersion: "",
+    snmpAuthProtocol: "",
+    snmpPrivProtocol: "",
+    snmpSecurityLevel: ""
+  } as RemoteInstanceCredentials;
+  snmpVersion: string = '';
+  snmpSecurityLevel: string = '';
+  snmpCommunity: string;
   errorMessage: string;
   isLoading = false;
   isSubmitted = false;
-  instanceType: string;
+  instance: { name: string, port: number };
   currentUrl: string;
+
+  private snmpDefaultCommunity: 'public';
 
   constructor(public addRemoteInstanceService: AddRemoteInstanceService, private router: Router) {
     this.currentUrl = this.router.url;
@@ -24,8 +54,7 @@ export class AddRemoteInstanceComponent implements OnInit {
   async ngOnInit() {
     this.errorMessage = '';
     this.isLoading = false;
-    this.instanceType =
-      this.addRemoteInstanceService.checkInstanceType(this.currentUrl) === 'postgresql' ? 'PostgreSQL' : 'MySQL';
+    this.instance = instanceMap[this.addRemoteInstanceService.checkInstanceType(this.currentUrl)]
   }
 
   async onSubmit(form) {
@@ -42,7 +71,11 @@ export class AddRemoteInstanceComponent implements OnInit {
     }
 
     if (this.remoteInstanceCredentials.port === undefined || this.remoteInstanceCredentials.port === '') {
-      this.remoteInstanceCredentials.port = this.instanceType === 'PostgreSQL' ? '5432' : '3306'; // set default value for port
+      this.remoteInstanceCredentials.port = this.instance.port.toString(); // set default value for port
+    }
+
+    if (this.instance.name === 'SNMP' && !this.remoteInstanceCredentials.snmpCommunity) {
+      this.remoteInstanceCredentials.snmpCommunity = this.snmpDefaultCommunity;
     }
 
     try {

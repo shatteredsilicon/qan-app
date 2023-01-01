@@ -57,6 +57,7 @@ const routes: Routes = [
     { path: 'add-amazon-rds', component: AddAmazonRDSComponent, pathMatch: 'full' },
     { path: 'add-remote-postgres', component: AddRemoteInstanceComponent, pathMatch: 'full' },
     { path: 'add-remote-mysql', component: AddRemoteInstanceComponent, pathMatch: 'full' },
+    { path: 'add-remote-snmp', component: AddRemoteInstanceComponent, pathMatch: 'full' },
     { path: 'pmm-list', component: RemoteInstancesListComponent, pathMatch: 'full' },
     { path: '**', component: PageNotFoundComponent }
 ];
