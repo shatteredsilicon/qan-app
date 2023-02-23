@@ -7,8 +7,8 @@
   <code>ssm-admin add</code> to add a monitoring service and check again. For more information on how to add a
   monitoring service,
   consult
-  <a href="https://www.percona.com/doc/percona-monitoring-and-management/pmm-admin.html#adding-monitoring-services"
-     target="blank">PMM documentation.</a>
+  <a href="https://github.com/shatteredsilicon/ssm-doc/blob/1.x/docs/ssm-admin.md#adding-monitoring-services"
+     target="blank">SSM documentation.</a>
 </div>
 <div *ngIf="dbServer !== null && dbServer !== undefined" class="content-container">
   <div *ngIf="!noQueryError" class="table-wrapper">
@@ -121,16 +121,16 @@
     <div *ngIf="dbServer.Subsystem === 'mongo' && !isFirsSeenChecked && !isSearchQuery" class="alert alert-warning w-75 mx-auto wrap no-mongo-queries">
       There is no query data because profiling is not enabled for the selected host. For information about how to
       enable profiling, see
-      <a href="https://www.percona.com/doc/percona-monitoring-and-management/conf-mongodb.html" target="blank">
+      <a href="https://github.com/shatteredsilicon/ssm-doc/blob/1.x/docs/conf-mongodb.md" target="blank">
         Configuring profiling in MongoDB
-      </a>in PMM documentation.
+      </a>in SSM documentation.
     </div>
     <div *ngIf="dbServer.Subsystem === 'mysql' && !isFirsSeenChecked && !isSearchQuery" class="alert alert-warning w-75 mx-auto wrap no-mysql-queries">
       There is no query data because the MySQL Server is not configured for monitoring. For details about the
       required configuration, see
-      <a href="https://www.percona.com/doc/percona-monitoring-and-management/conf-mysql.html" target="blank">
-        Configuring MySQL for Percona Monitoring and Management
-      </a>in PMM documentation.
+      <a href="https://github.com/shatteredsilicon/ssm-doc/blob/1.x/docs/conf-mysql.md" target="blank">
+        Configuring MySQL for Shattered Silicon Monitoring
+      </a>in SSM documentation.
     </div>
     <div *ngIf="isFirsSeenChecked && !isSearchQuery" class="alert alert-warning w-75 mx-auto wrap">
       There are no queries First Seen during the selected time range, try widening your time range.
