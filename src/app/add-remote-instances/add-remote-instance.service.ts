@@ -7,6 +7,13 @@ export interface RemoteInstanceCredentials {
   port: string;
   username: string;
   password: string;
+  snmpVersion: string;
+  snmpSecurityLevel: string;
+  snmpAuthProtocol: string;
+  snmpPrivProtocol: string;
+  snmpPrivPassword: string;
+  snmpContext: string;
+  snmpCommunity: string;
 }
 
 export interface NodeInstanceService {
@@ -25,6 +32,12 @@ export interface NodeInstance {
   collapsed: boolean;
 }
 
+const urlInstanceMap = {
+  '/add-remote-mysql': 'mysql',
+  '/add-remote-postgres': 'postgresql',
+  '/add-remote-snmp': 'snmp'
+}
+
 @Injectable()
 export class AddRemoteInstanceService {
 
@@ -34,7 +47,7 @@ export class AddRemoteInstanceService {
   constructor(private http: HttpClient) {
   }
 
-  async enable(remoteInstanceCredentials: RemoteInstanceCredentials, currentUrl): Promise<{}> {
+  async enable(remoteInstanceCredentials: RemoteInstanceCredentials, currentUrl: string): Promise<{}> {
     this.instanceUrlPart = this.checkInstanceType(currentUrl);
 
     const url = `/managed/v0/${this.instanceUrlPart}`;
@@ -42,9 +55,18 @@ export class AddRemoteInstanceService {
       address: remoteInstanceCredentials.address,
       name: remoteInstanceCredentials.name,
       port: remoteInstanceCredentials.port,
+      username: remoteInstanceCredentials.username,
       password: remoteInstanceCredentials.password,
-      username: remoteInstanceCredentials.username
     };
+    if (this.instanceUrlPart === 'snmp') {
+      data["version"] = remoteInstanceCredentials.snmpVersion;
+      data["community"] = remoteInstanceCredentials.snmpCommunity;
+      data["security_level"] = remoteInstanceCredentials.snmpSecurityLevel;
+      data["auth_protocol"] = remoteInstanceCredentials.snmpAuthProtocol;
+      data["priv_protocol"] = remoteInstanceCredentials.snmpPrivProtocol;
+      data["priv_password"] = remoteInstanceCredentials.snmpPrivPassword;
+      data["context_name"] = remoteInstanceCredentials.snmpContext;
+    }
     return await this.http
       .post(url, data, {headers: this.headers})
       .toPromise();
@@ -54,7 +76,7 @@ export class AddRemoteInstanceService {
    * Returns type of remote instance
    * @param currentUrl current page url
    */
-  checkInstanceType(currentUrl) {
-    return currentUrl === '/add-remote-postgres' ? 'postgresql' : 'mysql';
+  checkInstanceType(currentUrl: string) {
+    return urlInstanceMap[currentUrl];
   }
 }
