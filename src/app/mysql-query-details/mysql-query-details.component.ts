@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Instance, InstanceService } from '../core/instance.service';
 import { CoreComponent, QueryParams } from '../core/core.component';
-import { MySQLQueryDetailsService, QueryDetails, ServerSummary, Table, DBObjectType, QueryInfo } from './mysql-query-details.service';
+import { MySQLQueryDetailsService, QueryDetails, ServerSummary, Table, DBObjectType, QueryInfo, QueryInfoResult } from './mysql-query-details.service';
 import * as hljs from 'highlight.js';
 import * as vkbeautify from 'vkbeautify';
 import * as moment from 'moment';
@@ -374,9 +374,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
         []
       )
         .then(data => {
-          data && Object.keys(data).forEach(k => {
-            this.queryInfo[k] = data[k];
-          })
+          this.appendQueryInfo(data);
           this.tables = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBTable);
           this.selectTableInfo(db, tbl);
         })
@@ -403,9 +401,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
         [{ DB: db, Name: name }]
       )
         .then(data => {
-          data && Object.keys(data).forEach(k => {
-            this.queryInfo[k] = data[k];
-          })
+          this.appendQueryInfo(data);
           this.selectProcedureInfo(db, name);
         })
       this.newDBProcedureNames = '';
@@ -431,15 +427,19 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
         []
       )
         .then(data => {
-          data && Object.keys(data).forEach(k => {
-            this.queryInfo[k] = data[k];
-          })
+          this.appendQueryInfo(data);
           this.views = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBView);
           this.selectViewInfo(db, name);
         })
       this.newDBViewNames = '';
     }
     return false;
+  }
+
+  appendQueryInfo(data: QueryInfoResult) {
+    data && data.Info && Object.keys(data.Info).forEach(k => {
+      this.queryInfo[k] = data.Info[k];
+    })
   }
 
   removeDBTable(dbTableItem) {
