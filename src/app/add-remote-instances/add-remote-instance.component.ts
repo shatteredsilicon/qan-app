@@ -85,7 +85,11 @@ export class AddRemoteInstanceComponent implements OnInit {
         });
 
     } catch (err) {
-      this.errorMessage = err.json().error;
+      if ('status' in err && err.status >= 400 && err.status < 500 && 'error' in err && ('message' in err.error || 'msg' in err.error)) {
+        this.errorMessage = err.error.message || err.error.msg;
+      } else {
+        this.errorMessage = "Server can't fulfill this request";
+      }
     }
     this.isLoading = false;
   }
