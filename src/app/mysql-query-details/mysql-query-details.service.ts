@@ -65,7 +65,7 @@ export interface QueryExample {
   Db: string;
   QueryTime: number;
   Query: string;
-  Explain: string;
+  Explain: { String: string } | string;
 };
 
 export interface GuessDB {

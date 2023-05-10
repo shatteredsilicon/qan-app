@@ -1,5 +1,6 @@
 import {Component, Input, OnChanges, ElementRef} from '@angular/core';
-import * as renderjson from 'renderjson';
+
+declare var renderjson: any;
 
 @Component({
   selector: 'app-json-tree',
