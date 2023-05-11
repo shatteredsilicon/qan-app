@@ -28,7 +28,7 @@ See the SSM docs for more information.
 sed -i 's/"version": "[^"]*"/"version": "v%{version}"/' env.json
 
 %build
-export NODE_OPTIONS=--max_old_space_size=4096
+export NODE_OPTIONS=--max-old-space-size=4096
 npm run build
 
 %install
