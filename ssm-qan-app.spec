@@ -1,10 +1,12 @@
 %define debug_package %{nil}
 
 %global provider        github
-%global provider_tld	com
+%global provider_tld    com
 %global project         shatteredsilicon
 %global repo            qan-app
-%global provider_prefix	%{provider}.%{provider_tld}/%{project}/%{repo}
+%global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
+%global esbuild_version 0.14.22
+%global x_sys_version   aa78b53
 
 Name:		ssm-qan-app
 Version:	%{_version}
@@ -14,8 +16,10 @@ Summary:	Query Analytics API for SSM
 License:	AGPLv3
 URL:		https://%{provider_prefix}
 Source0:	%{name}-%{version}.tar.gz
+Source1:    https://github.com/evanw/esbuild/archive/v%{esbuild_version}/esbuild-v%{esbuild_version}.tar.gz
+Source2:    https://github.com/golang/sys/archive/%{x_sys_version}/sys-%{x_sys_version}.tar.gz
 
-BuildRequires:	nodejs npm
+BuildRequires:	nodejs npm golang
 Requires:	nginx
 
 %description
@@ -25,11 +29,23 @@ See the SSM docs for more information.
 
 %prep
 %setup -q -n %{name}
+%setup -q -T -D -a 1 -n %{name}
+%setup -q -T -D -a 2 -n %{name}
 sed -i 's/"version": "[^"]*"/"version": "v%{version}"/' env.json
 
 %build
-export NODE_OPTIONS=--max_old_space_size=4096
-npm run build
+export NODE_OPTIONS=--max-old-space-size=4096
+chmod -R a+rw node_modules
+
+# build esbuild
+mkdir -p esbuild-%{esbuild_version}/vendor/golang.org/x
+mv sys-%{x_sys_version}* esbuild-%{esbuild_version}/vendor/golang.org/x/sys
+pushd esbuild-%{esbuild_version}
+    go build -mod vendor ./cmd/esbuild
+popd
+mv esbuild-%{esbuild_version}/esbuild ./node_modules/esbuild/bin/esbuild
+
+ESBUILD_BINARY_PATH="$(pwd)/node_modules/esbuild/bin/esbuild" npm run build
 
 %install
 install -d %{buildroot}%{_datadir}/%{name}
