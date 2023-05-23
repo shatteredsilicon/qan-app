@@ -29,7 +29,7 @@ sed -i 's/"version": "[^"]*"/"version": "v%{version}"/' env.json
 
 %build
 export NODE_OPTIONS=--max_old_space_size=4096
-npm run build
+ESBUILD_BINARY_PATH="$(pwd)/node_modules/@esbuild/$(echo 'console.log(process.platform+"-"+process.arch);' | node)/bin/esbuild" npm run build
 
 %install
 install -d %{buildroot}%{_datadir}/%{name}
