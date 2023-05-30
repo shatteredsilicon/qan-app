@@ -98,6 +98,18 @@ fdescribe('QueryProfileComponent', () => {
     expect(contentContainer).toBeFalsy();
   });
 
+  it('should create alert message when there are qan messages', () => {
+    component.qanMessages = [{
+      Content: 'Throttling encountered while harvesting slow query log. Current long_query_time = 0.05, consider increasing to 0.10'
+    }];
+    component.dbServer = null;
+    fixture.detectChanges();
+    const qanMessage = fixture.nativeElement.querySelector('.has-qan-message');
+    const contentContainer = fixture.nativeElement.querySelector('.content-container');
+    expect(qanMessage).toBeTruthy();
+    expect(contentContainer).toBeFalsy();
+  });
+
   it('should create error message when no query data for mongodb', () => {
     component.totalAmountOfQueries = 0;
     component.dbServer.Subsystem = 'mongo';
