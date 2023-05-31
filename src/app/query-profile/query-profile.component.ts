@@ -1,7 +1,7 @@
 import { CoreComponent, QueryParams, QanError } from '../core/core.component';
 import { Component } from '@angular/core';
 import { InstanceService } from '../core/instance.service';
-import { QueryProfileService } from './query-profile.service';
+import { QueryProfileService, QanMessage } from './query-profile.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { MomentFormatPipe } from '../shared/moment-format.pipe';
@@ -29,6 +29,7 @@ export class QueryProfileComponent extends CoreComponent {
     public isFirstSeen: boolean;
     public isFirsSeenChecked = false;
     public isSearchQuery = false;
+    public qanMessages: QanMessage[];
 
     constructor(
       protected route: ActivatedRoute,
@@ -52,6 +53,8 @@ export class QueryProfileComponent extends CoreComponent {
             this.previousQueryParams.search !== this.queryParams.search ||
             this.previousQueryParams.first_seen !== this.queryParams.first_seen ||
             this.previousQueryParams.tz !== this.queryParams.tz) {
+            this.updateDBServer();
+            this.getQanMessages();
             this.loadQueries();
         }
     }
@@ -61,13 +64,16 @@ export class QueryProfileComponent extends CoreComponent {
       return this.isFirstSeen;
     }
 
-    public async loadQueries() {
+    updateDBServer() {
         this.dbServer = this.instanceService.dbServers[0];
         for (const dbServer of this.instanceService.dbServers) {
             if (dbServer.Name === this.queryParams['var-host']) {
                 this.dbServer = dbServer;
             }
         }
+    }
+
+    public async loadQueries() {
         this.isQuerySwitching = true;
 
         // clear after error
@@ -115,6 +121,15 @@ export class QueryProfileComponent extends CoreComponent {
         }
         this.leftInDbQueries = this.totalAmountOfQueries - (this.queryProfile.length - 1);
         this.isLoading = false;
+    }
+
+    public async getQanMessages() {
+        this.qanMessages = [];
+        try {
+            this.qanMessages = await this.queryProfileService.getQanMessages(this.dbServer.Agent?.UUID, this.dbServer.UUID)
+        } catch (err) {
+            // ignore error
+        }
     }
 
     composeQueryParamsForGrid(queryID: string | null): QueryParams {

@@ -1,6 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
+export interface QanMessage {
+  Content: string;
+};
+
 @Injectable()
 export class QueryProfileService {
 
@@ -26,5 +30,21 @@ export class QueryProfileService {
     return await this.httpClient
       .get(url, {headers: this.headers, params: params})
       .toPromise();
+  }
+
+  public async getQanMessages(agentUUID, dbServerUUID: string): Promise<any> {
+      const url = `/qan-api/agents/${agentUUID}/cmd`;
+
+      const params = {
+        AgentUUID: agentUUID,
+        Service: 'qan',
+        Cmd: 'GetMessages',
+        Data: btoa(dbServerUUID)
+      };
+
+      return this.httpClient
+        .put(url, params)
+        .toPromise()
+        .then(response => JSON.parse(atob(response['Data'])) as QanMessage[]);
   }
 }
