@@ -364,6 +364,9 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       if (this.queryDetails.Query.Tables === null) {
         this.queryDetails.Query.Tables = [];
       }
+      if (this.queryDetails.Query.Tables.some((t) => t.Db === db && t.Table === tbl)) {
+        return false
+      }
       this.queryDetails.Query.Tables.push({Db: db, Table: tbl});
       this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
       this.dbTblNames = this.newDBTblNames;
@@ -391,6 +394,9 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       if (this.queryDetails.Query.Procedures === null) {
         this.queryDetails.Query.Procedures = [];
       }
+      if (this.queryDetails.Query.Procedures.some((t) => t.DB === db && t.Name === name)) {
+        return false
+      }
       this.queryDetails.Query.Procedures.push({ DB: db, Name: name });
       this.queryDetailsService.updateProcedures(this.queryDetails.Query.Id, this.queryDetails.Query.Procedures);
       this.dbProcedureNames = this.newDBProcedureNames;
@@ -416,6 +422,9 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       const name = part[1].replace(/`/g, '');
       if (this.queryDetails.Query.Tables === null) {
         this.queryDetails.Query.Tables = [];
+      }
+      if (this.queryDetails.Query.Tables.some((t) => t.Db === db && t.Table === name)) {
+        return false
       }
       this.queryDetails.Query.Tables.push({ Db: db, Table: name });
       this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
