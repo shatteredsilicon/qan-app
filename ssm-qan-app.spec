@@ -31,7 +31,7 @@ See the SSM docs for more information.
 %setup -q -n %{name}
 %setup -q -T -D -a 1 -n %{name}
 %setup -q -T -D -a 2 -n %{name}
-sed -i 's/"version": "[^"]*"/"version": "v%{version}"/' env.json
+sed -i 's/"version": "[^"]*"/"version": "%{version}-%{release}"/' env.json
 
 %build
 export NODE_OPTIONS=--max-old-space-size=4096
