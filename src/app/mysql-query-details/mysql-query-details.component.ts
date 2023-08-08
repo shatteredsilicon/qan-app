@@ -151,7 +151,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       this.isFirstSeen = moment.utc(this.queryDetails.Query.FirstSeen).valueOf() > moment.utc(this.fromUTCDate).valueOf();
       this.isLoading = false;
 
-      this.dbName = this.defaultDB();
+      this.setDefaultDB();
       this.getQueryInfo();
     } catch (err) {
       console.error(err);
@@ -264,8 +264,8 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     this.indexTableError = '';
     this.createTableError = '';
 
-    if (dbName === '') {
-      dbName = this.dbName;
+    if (dbName === '' && this.tables?.length > 0) {
+      dbName = this.tables[0].Db;
     }
     if (tblName === '') {
       tblName = this.defaultTable();
@@ -302,11 +302,12 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
 
     this.createProcedureError = '';
 
+    let [defaultDB, defaultProcedure] = this.defaultProcedure();
     if (dbName === '') {
-      dbName = this.dbName;
+      dbName = defaultDB;
     }
     if (procedureName === '') {
-      procedureName = this.defaultProcedure();
+      procedureName = defaultProcedure;
     }
     this.dbProcedureNames = `\`${dbName}\`.\`${procedureName}\``;
 
@@ -331,8 +332,8 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
 
     this.createViewError = '';
 
-    if (dbName === '') {
-      dbName = this.dbName;
+    if (dbName === '' && this.views?.length > 0) {
+      dbName = this.views[0].Db;
     }
     if (viewName === '') {
       viewName = this.defaultView();
@@ -510,18 +511,27 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     return `\`${item.Db}\`.\`${item.Table}\`` === this.dbViewNames;
   }
 
-  private defaultDB(): string {
-    if (this.queryDetails.Example.Db) return this.queryDetails.Example.Db;
+  private setDefaultDB() {
+    var dbName: string = '';
+    if (this.queryDetails.Example.Db) dbName = this.queryDetails.Example.Db;
 
-    for (var i = 0; i < this.queryDetails.Query.Tables?.length; i++) {
-      if (this.queryDetails.Query.Tables[i].Db) return this.queryDetails.Query.Tables[i].Db
+    for (var i = 0; !dbName && i < this.queryDetails.Query.Tables?.length; i++) {
+      if (this.queryDetails.Query.Tables[i].Db) dbName = this.queryDetails.Query.Tables[i].Db
     }
 
-    for (var i = 0; i < this.queryDetails.Query.Procedures?.length; i++) {
-      if (this.queryDetails.Query.Procedures[i].DB) return this.queryDetails.Query.Procedures[i].DB
+    for (var i = 0; !dbName && i < this.queryDetails.Query.Procedures?.length; i++) {
+      if (this.queryDetails.Query.Procedures[i].DB) dbName = this.queryDetails.Query.Procedures[i].DB
     }
 
-    return '';
+    this.dbName = dbName;
+
+    for (var i = 0; dbName && i < this.queryDetails.Query.Tables?.length; i++) {
+      if (!this.queryDetails.Query.Tables[i].Db) this.queryDetails.Query.Tables[i].Db = dbName
+    }
+
+    for (var i = 0; dbName && i < this.queryDetails.Query.Procedures?.length; i++) {
+      if (!this.queryDetails.Query.Procedures[i].DB) this.queryDetails.Query.Procedures[i].DB = dbName
+    }
   }
 
   private defaultTable(): string {
@@ -532,15 +542,15 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     return '';
   }
 
-  private defaultProcedure(): string {
+  private defaultProcedure(): [string, string] {
     if (this.queryDetails.hasOwnProperty('Query')
       && this.queryDetails.Query.hasOwnProperty('Procedures')
       && this.queryDetails.Query.Procedures !== null
       && this.queryDetails.Query.Procedures.length > 0) {
-      return this.queryDetails.Query.Procedures[0].Name;
+      return [this.queryDetails.Query.Procedures[0].DB, this.queryDetails.Query.Procedures[0].Name];
     }
 
-    return '';
+    return ['', ''];
   }
 
   private defaultView(): string {
