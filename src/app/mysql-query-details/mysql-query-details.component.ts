@@ -229,19 +229,17 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
         if (!this.dbName && data.GuessDB?.DB) {
           this.dbName = data.GuessDB.DB;
           this.isDBGuessed = data.GuessDB.IsAmbiguous;
-        }
 
-        if (this.queryExample) {
-          this.getExplain();
-        }
-
-        if (this.dbName) {
           for (var i = 0; i < this.queryDetails.Query.Tables?.length; i++) {
             if (!this.queryDetails.Query.Tables[i].Db) this.queryDetails.Query.Tables[i].Db = this.dbName;
           }
           for (var i = 0; i < this.queryDetails.Query.Procedures?.length; i++) {
             if (!this.queryDetails.Query.Procedures[i].DB) this.queryDetails.Query.Procedures[i].DB = this.dbName;
           }
+        }
+
+        if (this.queryExample) {
+          this.getExplain();
         }
 
         this.queryInfo = data.Info;
@@ -512,25 +510,14 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
   }
 
   private setDefaultDB() {
-    var dbName: string = '';
-    if (this.queryDetails.Example.Db) dbName = this.queryDetails.Example.Db;
+    if (this.queryDetails.Example.Db) this.dbName = this.queryDetails.Example.Db;
 
-    for (var i = 0; !dbName && i < this.queryDetails.Query.Tables?.length; i++) {
-      if (this.queryDetails.Query.Tables[i].Db) dbName = this.queryDetails.Query.Tables[i].Db
+    for (var i = 0; this.dbName && i < this.queryDetails.Query.Tables?.length; i++) {
+      if (!this.queryDetails.Query.Tables[i].Db) this.queryDetails.Query.Tables[i].Db = this.dbName
     }
 
-    for (var i = 0; !dbName && i < this.queryDetails.Query.Procedures?.length; i++) {
-      if (this.queryDetails.Query.Procedures[i].DB) dbName = this.queryDetails.Query.Procedures[i].DB
-    }
-
-    this.dbName = dbName;
-
-    for (var i = 0; dbName && i < this.queryDetails.Query.Tables?.length; i++) {
-      if (!this.queryDetails.Query.Tables[i].Db) this.queryDetails.Query.Tables[i].Db = dbName
-    }
-
-    for (var i = 0; dbName && i < this.queryDetails.Query.Procedures?.length; i++) {
-      if (!this.queryDetails.Query.Procedures[i].DB) this.queryDetails.Query.Procedures[i].DB = dbName
+    for (var i = 0; this.dbName && i < this.queryDetails.Query.Procedures?.length; i++) {
+      if (!this.queryDetails.Query.Procedures[i].DB) this.queryDetails.Query.Procedures[i].DB = this.dbName
     }
   }
 
