@@ -23,7 +23,7 @@
           <span class="fa fa-trash-o instance-trash" (click)="disableInstance(i, instance)"></span>
         </td>
       </tr>
-      <tr #collapse="ngbCollapse" [(ngbCollapse)]="instance.collapsed">
+      <tr #collapse="ngbCollapse" *ngIf="!instance.collapsed" [(ngbCollapse)]="instance.collapsed">
         <td colspan="4">
           <table class="table instance-table subinstance-table">
             <thead>
