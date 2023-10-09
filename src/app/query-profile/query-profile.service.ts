@@ -14,7 +14,7 @@ export class QueryProfileService {
   }
 
   public async getQueryProfile(dbServerUUID, begin, end: string,
-                               offset = 0, search = '', first_seen): Promise<{}> {
+                               offset = 0, search = '', first_seen, sortBy = ''): Promise<{}> {
     const url = `/qan-api/qan/profile/${dbServerUUID}`;
     const searchValue = btoa(
       search.replace(/%([0-9A-F]{2})/g,
@@ -25,7 +25,8 @@ export class QueryProfileService {
       .set('end', end)
       .set('offset', String(offset))
       .set('first_seen', String(!!first_seen))
-      .set('search', searchValue);
+      .set('search', searchValue)
+      .set('sort_by', sortBy);
 
     return await this.httpClient
       .get(url, {headers: this.headers, params: params})

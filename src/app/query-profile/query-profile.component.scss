@@ -110,3 +110,15 @@ input:disabled {
   opacity: .65;
   z-index: 100;
 }
+
+span.triangle-down {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #d8d9da;
+}
+
+div.clickable {
+  cursor: pointer;
+}

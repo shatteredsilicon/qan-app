@@ -30,6 +30,7 @@ export class QueryProfileComponent extends CoreComponent {
     public isFirsSeenChecked = false;
     public isSearchQuery = false;
     public qanMessages: QanMessage[];
+    public sortQueriesBy: string = '';
 
     constructor(
       protected route: ActivatedRoute,
@@ -52,7 +53,8 @@ export class QueryProfileComponent extends CoreComponent {
             this.previousQueryParams.to !== this.queryParams.to ||
             this.previousQueryParams.search !== this.queryParams.search ||
             this.previousQueryParams.first_seen !== this.queryParams.first_seen ||
-            this.previousQueryParams.tz !== this.queryParams.tz) {
+            this.previousQueryParams.tz !== this.queryParams.tz ||
+            this.previousQueryParams.sort_by !== this.queryParams.sort_by) {
             this.updateDBServer();
             this.getQanMessages();
             this.loadQueries();
@@ -73,7 +75,7 @@ export class QueryProfileComponent extends CoreComponent {
         }
     }
 
-    public async loadQueries() {
+    public async loadQueries(sortKey: string = null) {
         this.isQuerySwitching = true;
 
         // clear after error
@@ -83,10 +85,11 @@ export class QueryProfileComponent extends CoreComponent {
         this.searchValue = this.queryParams.search === 'null' ? '' : this.queryParams.search;
         const search = this.queryParams.search === 'null' && this.searchValue !== 'NULL' ? '' : this.queryParams.search;
         const firstSeen = this.queryParams.first_seen;
+        this.sortQueriesBy = sortKey || this.queryParams.sort_by || '';
         this.offset = 0;
         try {
             const data = await this.queryProfileService
-                .getQueryProfile(this.dbServer.UUID, this.fromUTCDate, this.toUTCDate, this.offset, search, firstSeen);
+                .getQueryProfile(this.dbServer.UUID, this.fromUTCDate, this.toUTCDate, this.offset, search, firstSeen, this.sortQueriesBy);
             if (data.hasOwnProperty('Error') && data['Error'] !== '') {
                 throw new QanError('Queries are not available.');
             }
@@ -113,7 +116,7 @@ export class QueryProfileComponent extends CoreComponent {
           this.searchValue !== 'NULL' && this.searchValue !== 'null' ? '' : this.queryParams.search;
         const firstSeen = this.queryParams.first_seen;
         const data = await this.queryProfileService
-            .getQueryProfile(dbServerUUID, this.fromUTCDate, this.toUTCDate, this.offset, search, firstSeen);
+            .getQueryProfile(dbServerUUID, this.fromUTCDate, this.toUTCDate, this.offset, search, firstSeen, this.sortQueriesBy);
 
         const _ = data['Query'].shift();
         for (const q of data['Query']) {

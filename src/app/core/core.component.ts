@@ -18,6 +18,7 @@ export interface QueryParams {
   tz?: string;
   theme?: string;
   first_seen?: boolean;
+  sort_by?: string;
 }
 
 /**

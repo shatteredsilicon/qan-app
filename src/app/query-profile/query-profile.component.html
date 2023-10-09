@@ -47,9 +47,30 @@
       <div class="grid-container">
         <div>#</div>
         <div>Query Abstract</div>
-        <div>Load</div>
-        <div>Count</div>
-        <div>Latency</div>
+        <div
+          (click)="loadQueries('load')"
+          [disabled]="sortQueriesBy !== 'count' && sortQueriesBy !== 'latency'"
+          class="clickable"
+        >
+          Load
+          <span *ngIf="sortQueriesBy !== 'count' && sortQueriesBy !== 'latency'" class="triangle-down"></span>
+        </div>
+        <div
+          (click)="loadQueries('count')"
+          [disabled]="sortQueriesBy === 'count'"
+          class="clickable"
+        >
+          Count
+          <span *ngIf="sortQueriesBy === 'count'" class="triangle-down"></span>
+        </div>
+        <div
+          (click)="loadQueries('latency')"
+          [disabled]="sortQueriesBy === 'latency'"
+          class="clickable"
+        >
+          Latency
+          <span *ngIf="sortQueriesBy === 'latency'" class="triangle-down"></span>
+        </div>
       </div>
       <div class="grid-container grid-container-data"
            *ngFor="let row of queryProfile; let i = index; let first = first;"
