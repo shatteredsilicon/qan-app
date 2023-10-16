@@ -313,7 +313,10 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     if (!info) return;
     this.procedureInfo = info;
     try {
-      this.createProcedure = hljs.highlight('sql', info.Create).value;
+      const codeBlock = document.getElementById('createProcedureCode');
+      codeBlock.innerText = info.Create;
+      hljs.highlightBlock(codeBlock);
+      this.createProcedure = codeBlock.innerHTML;
     } catch (e) { }
 
     if (info.hasOwnProperty('Errors') && info['Errors'].length > 0) {

@@ -1071,7 +1071,8 @@
   </section>
 
   <section class="procedures"
-    *ngIf="!!createProcedure || !!createProcedureError">
+    *ngIf="!isLoading"
+    [style.visibility]="!!createProcedure || !!createProcedureError ? 'visible' : 'hidden'">
     <header class="section-title">
       <h3>PROCEDURES</h3>
       <form class="search-input tables-input" (submit)="addDBProcedure();">
@@ -1095,7 +1096,7 @@
       </div>
     </section>
     <ngb-accordion [activeIds]="accordionIds.procedureSection">
-      <ngb-panel id="procedure-create" *ngIf="!!createProcedure || !!createProcedureError">
+      <ngb-panel id="procedure-create" [style.visibility]="!!createProcedure || !!createProcedureError ? 'visible' : 'hidden'">
         <ng-template ngbPanelTitle>
           <div class="accordion-title">
             <h5>CREATE</h5>
@@ -1110,9 +1111,10 @@
               {{ createProcedureError }}
             </div>
           </div>
-          <div class="data-output" *ngIf="!isQueryInfoLoading && !createProcedureError">
+          <div class="data-output" [style.visibility]="createProcedure && !isQueryInfoLoading ? 'visible' : 'hidden'">
+            <pre style="display: none;"><code id="createProcedureCode" class="sql"></code></pre>
             <pre><code [innerHTML]="createProcedure"></code></pre>
-            <button class="pmm-button" id="copyCreateProcedure" ngxClipboard [cbContent]="procedureInfo.Create"
+            <button *ngIf="createProcedure" class="pmm-button" id="copyCreateProcedure" ngxClipboard [cbContent]="procedureInfo.Create"
               (cbOnSuccess)="showSuccessNotification('createProcedure')" [class.btn-copied]="isCopied.createProcedure">Copy to
               clipboard
             </button>
