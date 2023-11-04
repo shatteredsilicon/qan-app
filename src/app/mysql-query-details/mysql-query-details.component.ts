@@ -194,7 +194,12 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       // let data = await this.queryDetailsService.getExplain(agentUUID, dbServerUUID, this.dbName, query);
       this.dataExplain = await this.queryDetailsService.getExplain(agentUUID, dbServerUUID, this.dbName, query, typeof this.queryDetails.Example.Explain === 'string' ? this.queryDetails.Example.Explain : this.queryDetails.Example.Explain.String);
       if (this.dataExplain.hasOwnProperty('Error') && this.dataExplain['Error'] !== '') {
-        throw new Error(this.dataExplain['Error']);
+        const explainError = JSON.parse(this.dataExplain['Error'])
+        if (explainError && typeof explainError === 'object' && 'Type' in explainError && explainError['Type'] === 'visual') {
+          this.visualExplainError = 'This type of query is not supported for VISUAL EXPLAIN';
+        } else {
+          throw new Error(this.dataExplain['Error']);
+        }
       }
       this.dataExplain = JSON.parse(atob(this.dataExplain.Data));
       this.classicExplain = this.dataExplain.Classic;
