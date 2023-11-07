@@ -27,7 +27,7 @@ export interface QueryInfo {
 
 export interface QueryInfoResult {
   GuessDB: GuessDB | null;
-  Info: Map<string, QueryInfo> | null;
+  Info: { [k: string]: QueryInfo } | null;
 }
 
 export interface QueryClass {
