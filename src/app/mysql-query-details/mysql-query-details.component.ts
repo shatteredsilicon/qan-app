@@ -21,7 +21,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
   public queryDetails: QueryDetails;
   public tables: Array<Table> = [];
   public views: Array<Table> = [];
-  public queryInfo;
+  public queryInfo: { [k: string]: QueryInfo } | null;
   public tableInfo;
   public procedureInfo;
   public viewInfo;
@@ -250,6 +250,19 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
         this.queryInfo = data.Info;
         this.tables = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBTable);
         this.views = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBView);
+
+        // append underlying tables/views
+        Object.entries(this.queryInfo).forEach(([key, item]) => {
+          if (this.queryDetails.Query.Tables?.some(t => `${t.Db}.${t.Table}` === key)) {
+            return;
+          }
+
+          const dbTable = key.split('.');
+          const db = dbTable.length > 1 ? dbTable[0] : this.dbName;
+          const table = dbTable.length > 1 ? dbTable[1] : dbTable[0];
+          item.Type === DBObjectType.TypeDBTable && this.tables.push({ Db: db, Table: table })
+          item.Type === DBObjectType.TypeDBView && this.views.push({ Db: db, Table: table })
+        })
 
         this.selectTableInfo('', '');
         this.selectProcedureInfo('', '');
