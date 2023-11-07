@@ -6,7 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { MomentFormatPipe } from '../shared/moment-format.pipe';
 
-const queryProfileError = 'No data. Please check pmm-client and database configurations on selected instance.';
+const queryProfileError = 'No data. Please check ssm-client and database configurations on selected instance.';
 
 @Component({
     moduleId: module.id,
