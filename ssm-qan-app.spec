@@ -15,7 +15,7 @@ Summary:	Query Analytics API for SSM
 
 License:	AGPLv3
 URL:		https://%{provider_prefix}
-Source0:	%{name}-%{version}.tar.gz
+Source0:	%{name}-%{version}-%{release}.tar.gz
 Source1:    https://github.com/evanw/esbuild/archive/v%{esbuild_version}/esbuild-v%{esbuild_version}.tar.gz
 Source2:    https://github.com/golang/sys/archive/%{x_sys_version}/sys-%{x_sys_version}.tar.gz
 
