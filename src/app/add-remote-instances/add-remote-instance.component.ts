@@ -59,7 +59,7 @@ export class AddRemoteInstanceComponent implements OnInit {
 
   async onSubmit(form) {
     const currentUrl = `${window.parent.location}`;
-    const newURL = currentUrl.split('/graph/d/').shift() + '/graph/d/pmm-list/';
+    const newURL = currentUrl.split('/graph/d/').shift() + '/graph/d/ssm-list/';
 
     this.errorMessage = '';
     this.isSubmitted = true;
