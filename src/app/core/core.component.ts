@@ -12,7 +12,7 @@ import { RDSInstance, RDSService } from './rds.service';
 export interface QueryParams {
   from?: string;
   to?: string;
-  'var-host'?: string; // | string[];
+  'var-host'?: string;
   search?: string;
   queryID?: string;
   tz?: string;
@@ -32,9 +32,8 @@ export abstract class CoreComponent implements OnDestroy {
   protected routerSubscription: Subscription;
   public queryParams: QueryParams;
   public previousQueryParams: QueryParams;
-  public agent: Instance | null;
-  public dbServer: Instance | null;
-  public dbServers: Array<Instance> = [];
+  public dbServer: Instance | null = null; // for components that care current database server only
+  public dbServers: Array<Instance> = []; // for components that care all selected database servers
   public dbServerMap: { [key: string]: Instance } = {};
   public rdsInstances: Array<RDSInstance> = [];
   public from: any;
@@ -51,7 +50,6 @@ export abstract class CoreComponent implements OnDestroy {
               protected instanceService: InstanceService,
               protected rdsService: RDSService = null) {
     this.dbServer = instanceService.dbServers[0];
-    this.agent = instanceService.dbServers[0].Agent;
     this.dbServers = instanceService.dbServers;
     this.dbServerMap = instanceService.dbServerMap;
     if (rdsService !== null)
@@ -80,19 +78,19 @@ export abstract class CoreComponent implements OnDestroy {
   }
 
   parseParams() {
-    this.isAllSelected = this.queryParams['var-host'] === 'All';
-    this.isQueryDataAbsent = (this.dbServer === null) && (!this.isAllSelected) && (!this.isNotExistSelected);
+    this.isAllSelected = this.queryParams['var-host']?.split(',').includes('All');
+    this.isQueryDataAbsent = (!this.dbServers?.length) && (!this.isAllSelected) && (!this.isNotExistSelected);
     try {
-      this.dbServer = this.dbServerMap[this.queryParams['var-host']];
-      this.agent = this.dbServerMap[this.queryParams['var-host']].Agent;
+      this.dbServers = this.queryParams['var-host']?.split(',').map(host => this.dbServerMap[host]);
+      this.dbServer = this.dbServers[0];
     } catch (err) {
       if (this.queryParams.hasOwnProperty('var-host')) {
         this.dbServer = null;
-        this.agent = null;
+        this.dbServers = [];
         this.isNotExistSelected = !this.isAllSelected;
       } else {
+        this.dbServers = this.instanceService.dbServers;
         this.dbServer = this.instanceService.dbServers[0];
-        this.agent = this.instanceService.dbServers[0].Agent;
       }
     }
     this.setTimeZoneFromParams();

@@ -55,8 +55,8 @@ export class QueryProfileComponent extends CoreComponent {
             this.previousQueryParams.first_seen !== this.queryParams.first_seen ||
             this.previousQueryParams.tz !== this.queryParams.tz ||
             this.previousQueryParams.sort_by !== this.queryParams.sort_by) {
-            this.updateDBServer();
-            this.getQanMessages();
+            if (this.dbServers.length === 1 && this.dbServer)
+                this.getQanMessages();
             this.loadQueries();
         }
     }
@@ -64,15 +64,6 @@ export class QueryProfileComponent extends CoreComponent {
     checkFirstSeen(currentQuery) {
       this.isFirstSeen = moment.utc(currentQuery['FirstSeen']).valueOf() > moment.utc(this.fromUTCDate).valueOf();
       return this.isFirstSeen;
-    }
-
-    updateDBServer() {
-        this.dbServer = this.instanceService.dbServers[0];
-        for (const dbServer of this.instanceService.dbServers) {
-            if (dbServer.Name === this.queryParams['var-host']) {
-                this.dbServer = dbServer;
-            }
-        }
     }
 
     public async loadQueries(sortKey: string = null) {
@@ -89,7 +80,7 @@ export class QueryProfileComponent extends CoreComponent {
         this.offset = 0;
         try {
             const data = await this.queryProfileService
-                .getQueryProfile(this.dbServer.UUID, this.fromUTCDate, this.toUTCDate, this.offset, search, firstSeen, this.sortQueriesBy);
+                .getQueryProfile(this.dbServers.map(s => s.UUID), this.fromUTCDate, this.toUTCDate, this.offset, search, firstSeen, this.sortQueriesBy);
             if (data.hasOwnProperty('Error') && data['Error'] !== '') {
                 throw new QanError('Queries are not available.');
             }
@@ -109,14 +100,13 @@ export class QueryProfileComponent extends CoreComponent {
 
     public async loadMoreQueries() {
         this.isLoading = true;
-        const dbServerUUID = this.dbServer.UUID;
         this.offset = this.offset + 10;
         const search =
           this.queryParams.search === 'null' &&
           this.searchValue !== 'NULL' && this.searchValue !== 'null' ? '' : this.queryParams.search;
         const firstSeen = this.queryParams.first_seen;
         const data = await this.queryProfileService
-            .getQueryProfile(dbServerUUID, this.fromUTCDate, this.toUTCDate, this.offset, search, firstSeen, this.sortQueriesBy);
+            .getQueryProfile(this.dbServers.map(s => s.UUID), this.fromUTCDate, this.toUTCDate, this.offset, search, firstSeen, this.sortQueriesBy);
 
         const _ = data['Query'].shift();
         for (const q of data['Query']) {

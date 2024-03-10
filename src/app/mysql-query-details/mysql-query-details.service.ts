@@ -99,11 +99,12 @@ export class MySQLQueryDetailsService {
   constructor(private httpClient: HttpClient) {
   }
 
-  public async getQueryDetails(dbServerUUID, queryUUID, begin, end: string): Promise<QueryDetails> {
-    const url = `/qan-api/qan/report/${dbServerUUID}/query/${queryUUID}`;
+  public async getQueryDetails(dbServerUUIDs: string[], queryUUID, begin, end: string): Promise<QueryDetails> {
+    const url = `/qan-api/qan/query/${queryUUID}/report`;
     const params = new HttpParams()
       .set('begin', begin)
-      .set('end', end);
+      .set('end', end)
+      .appendAll({ 'uuids[]': dbServerUUIDs });
 
     const response = await this.httpClient
       .get(url, {headers: this.headers, params: params})
@@ -111,12 +112,13 @@ export class MySQLQueryDetailsService {
     return response as QueryDetails;
   }
 
-  public async getSummary(dbServerUUID: string, begin: string, end: string): Promise<ServerSummary> {
-    const url = `/qan-api/qan/report/${dbServerUUID}/server-summary`;
+  public async getSummary(dbServerUUIDs: string[], begin: string, end: string): Promise<ServerSummary> {
+    const url = `/qan-api/qan/server-summary/report`;
 
     const params = new HttpParams()
       .set('begin', begin)
-      .set('end', end);
+      .set('end', end)
+      .appendAll({ 'uuids[]': dbServerUUIDs });
 
     const response = await this.httpClient
       .get(url, {headers: this.headers, params: params})

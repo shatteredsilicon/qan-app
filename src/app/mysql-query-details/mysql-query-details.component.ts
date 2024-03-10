@@ -100,10 +100,10 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
   }
 
   onChangeParams(params) {
-    if (!this.dbServer) { return; }
+    const dbServerIDs = this.dbServers.map(s => s.UUID);
     if (['TOTAL', undefined].indexOf(this.queryParams.queryID) !== -1) {
       this.isSummary = true;
-      this.getServerSummary(this.dbServer.UUID, this.fromUTCDate, this.toUTCDate);
+      this.getServerSummary(dbServerIDs, this.fromUTCDate, this.toUTCDate);
     } else {
       this.isSummary = false;
       this.accordionIds = {
@@ -114,7 +114,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
         procedureSection: ['procedure-create'],
         viewSection: ['view-create']
       };
-      this.getQueryDetails(this.dbServer.UUID, this.queryParams.queryID, this.fromUTCDate, this.toUTCDate);
+      this.getQueryDetails(dbServerIDs, this.queryParams.queryID, this.fromUTCDate, this.toUTCDate);
     }
   }
 
@@ -127,7 +127,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       return vkbeautify.sql(text.replace(/^EXPLAIN /i, "explain ")).replace('explain', 'EXPLAIN ').replace('  ', ' ');
   }
 
-  async getQueryDetails(dbServerUUID, queryID, from, to: string) {
+  async getQueryDetails(dbServerUUIDs: string[], queryID, from, to: string) {
     this.isLoading = true;
     this.dbName = this.dbTblNames = '';
     this.dbProcedureNames = '';
@@ -141,7 +141,8 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     this.jsonExplainError = this.classicExplainError = this.visualExplainError = '';
     this.jsonExplain = this.jsonExplainString = this.classicExplain = this.visualExplain = '';
     try {
-      this.queryDetails = await this.queryDetailsService.getQueryDetails(dbServerUUID, queryID, from, to);
+      this.queryDetails = await this.queryDetailsService.getQueryDetails(dbServerUUIDs, queryID, from, to);
+      this.dbServer = this.dbServers.find(dbServer => dbServer.UUID === this.queryDetails.InstanceId);
       this.firstSeen = moment(this.queryDetails.Query.FirstSeen).calendar(null, {sameElse: 'lll'});
       this.lastSeen = moment(this.queryDetails.Query.LastSeen).calendar(null, {sameElse: 'lll'});
       this.fingerprint = hljs.highlight('sql', this.fixBeautifyText(this.queryDetails.Query.Fingerprint)).value;
@@ -158,10 +159,10 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     }
   }
 
-  async getServerSummary(dbServerUUID: string, from: string, to: string) {
+  async getServerSummary(dbServerUUIDs: string[], from: string, to: string) {
     this.dbName = this.dbTblNames = '';
     try {
-      this.queryDetails = await this.queryDetailsService.getSummary(dbServerUUID, from, to) as QueryDetails;
+      this.queryDetails = await this.queryDetailsService.getSummary(dbServerUUIDs, from, to) as QueryDetails;
     } catch (err) {
       console.error(err);
     }

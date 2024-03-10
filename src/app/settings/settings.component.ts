@@ -85,7 +85,7 @@ export class SettingsComponent extends CoreComponent {
    *  - Collect from: 'slowlog' or 'perfschema'.
    */
   public async getAgentDefaults() {
-    const res = await this.settingsService.getAgentDefaults(this.agent.UUID, this.dbServer.UUID);
+    const res = await this.settingsService.getAgentDefaults(this.dbServer.Agent.UUID, this.dbServer.UUID);
     try {
       this.agentConf = res;
       this.interval = (this.agentConf.qan.Interval / 60).toString();
@@ -105,7 +105,7 @@ export class SettingsComponent extends CoreComponent {
    */
   public async setAgentDefaults() {
     const res = await this.settingsService.setAgentDefaults(
-      this.agent.UUID,
+      this.dbServer.Agent.UUID,
       this.dbServer.UUID,
       +this.interval,
       this.exampleQueries,
@@ -137,7 +137,7 @@ export class SettingsComponent extends CoreComponent {
    * Get slice of exported variables of agent.
    */
   getAgentStatus() {
-    this.agentStatus = this.settingsService.getAgentStatus(this.agent.UUID);
+    this.agentStatus = this.settingsService.getAgentStatus(this.dbServer.Agent.UUID);
     const updated: any = moment();
     this.statusUpdatedFromNow$ = interval(60000).pipe(map(n => updated.fromNow()));
   }
@@ -148,7 +148,7 @@ export class SettingsComponent extends CoreComponent {
   getAgentLog() {
     const begin = moment.utc().subtract(this.logPeriod, 'h').format('YYYY-MM-DDTHH:mm:ss');
     const end = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
-    this.agentLog = this.settingsService.getAgentLog(this.agent.UUID, begin, end);
+    this.agentLog = this.settingsService.getAgentLog(this.dbServer.Agent.UUID, begin, end);
     const updated: any = moment();
     this.logUpdatedFromNow$ = interval(60000).pipe(map(n => updated.fromNow()));
   }
