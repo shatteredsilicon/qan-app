@@ -68,6 +68,14 @@ export interface QueryExample {
   Explain: { String: string } | string;
 };
 
+export interface UserSource {
+  User: string;
+  Host: string;
+  FirstSeen: number;
+  LastSeen: number;
+  Count: number;
+}
+
 export interface GuessDB {
   DB: string;
   IsAmbiguous: boolean;
@@ -79,6 +87,7 @@ export interface QueryDetails {
   End: string;
   Query: QueryClass;
   Example: QueryExample;
+  UserSources: Array<UserSource>;
   Metrics2: {};
   Sparks2: Array<{}>;
 };
@@ -171,6 +180,20 @@ export class MySQLQueryDetailsService {
       .put(url, params)
       .toPromise()
       .then(response => response);
+  }
+
+  public async getUserSources(dbServerUUIDs: string[], queryUUID, begin, end: string): Promise<Array<UserSource>> {
+    const url = `/qan-api/qan/query/${queryUUID}/user-sources`;
+    const params = new HttpParams()
+      .set('begin', begin)
+      .set('end', end)
+      .appendAll({ 'uuids[]': dbServerUUIDs });
+
+    const response = await this.httpClient
+      .get(url, {headers: this.headers, params: params})
+      .toPromise();
+
+    return response as Array<UserSource>;
   }
 
   updateTables(queryID: string, dbTables: Array<{}>) {

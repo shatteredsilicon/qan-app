@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Instance, InstanceService } from '../core/instance.service';
 import { CoreComponent, QueryParams } from '../core/core.component';
-import { MySQLQueryDetailsService, QueryDetails, ServerSummary, Table, DBObjectType, QueryInfo, QueryInfoResult } from './mysql-query-details.service';
+import { MySQLQueryDetailsService, QueryDetails, UserSource, Table, DBObjectType, QueryInfo, QueryInfoResult } from './mysql-query-details.service';
 import * as hljs from 'highlight.js';
 import * as vkbeautify from 'vkbeautify';
 import * as moment from 'moment';
@@ -21,6 +21,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
   public queryDetails: QueryDetails;
   public tables: Array<Table> = [];
   public views: Array<Table> = [];
+  public userSources: Array<UserSource> = [];
   public queryInfo: { [k: string]: QueryInfo } | null;
   public tableInfo;
   public procedureInfo;
@@ -58,6 +59,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     createView: false
   };
   isQueryInfoLoading: boolean;
+  isUserSourceLoading: boolean;
   isFirstSeen: boolean;
   firstSeen: string;
   lastSeen: string;
@@ -67,7 +69,8 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     explainSection: ['classic-explain'],
     tableSection: ['table-create'],
     procedureSection: ['procedure-create'],
-    viewSection: ['view-create']
+    viewSection: ['view-create'],
+    userSourceSection: ['user-source-list']
   };
 
   createTableError: string;
@@ -78,6 +81,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
   visualExplainError: string;
   createProcedureError: string;
   createViewError: string;
+  userSourceError: string;
   event = new Event('showSuccessNotification');
 
   constructor(protected route: ActivatedRoute,
@@ -112,7 +116,8 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
         explainSection: ['classic-explain'],
         tableSection: ['table-create'],
         procedureSection: ['procedure-create'],
-        viewSection: ['view-create']
+        viewSection: ['view-create'],
+        userSourceSection: ['user-source-list']
       };
       this.getQueryDetails(dbServerIDs, this.queryParams.queryID, this.fromUTCDate, this.toUTCDate);
     }
@@ -154,6 +159,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
 
       this.setDefaultDB();
       this.getQueryInfo();
+      this.getUserSources(dbServerUUIDs, queryID, from, to);
     } catch (err) {
       console.error(err);
     }
@@ -271,6 +277,28 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       })
       .finally(() => {
         this.isQueryInfoLoading = false
+      })
+  }
+
+  getUserSources(dbServerUUIDs: string[], queryID, from, to: string) {
+    if (!this.dbServer) { return; }
+
+    this.isUserSourceLoading = true;
+
+    this.queryDetailsService.getUserSources(
+      dbServerUUIDs,
+      queryID,
+      from,
+      to
+    )
+      .then(data => {
+        this.userSources = data;
+      })
+      .catch(() => {
+        this.userSourceError = "Can't get list of user sources";
+      })
+      .finally(() => {
+        this.isUserSourceLoading = false
       })
   }
 

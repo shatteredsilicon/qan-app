@@ -1173,4 +1173,43 @@
       </ngb-panel>
     </ngb-accordion>
   </section>
+
+  <section class="user-souurce">
+    <header class="section-title">
+      <h3>User Sources</h3>
+    </header>
+    <ngb-accordion [activeIds]="accordionIds.userSourceSection">
+      <ngb-panel id="user-source-list">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>LIST</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isUserSourceLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div *ngIf="!isUserSourceLoading && userSourceError" class="alert alert-warning w-75 mx-auto m-2"
+               role="alert">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            {{ userSourceError }}
+          </div>
+          <div class="table-wrapper classic-table-wrapper" *ngIf="!isUserSourceLoading && !userSourceError">
+            <div class="table-header classic-table-row table-header-row">
+              <div title="User">User</div>
+              <div title="Host">Host</div>
+              <div title="First Seen">First Seen</div>
+              <div title="Last Seen">Last Seen</div>
+              <div title="Count">Count</div>
+            </div>
+            <div class="table-body-row classic-table-row" *ngFor="let row of userSources; let i = index">
+              <div [attr.title]="row.User">{{ row.User }}</div>
+              <div [attr.title]="row.Host">{{ row.Host }}</div>
+              <div [attr.title]="row.FirstSeen">{{ row.FirstSeen / 1000000 | date:'yyyy-MM-dd HH:mm:ss' }}</div>
+              <div [attr.title]="row.LastSeen">{{ row.LastSeen / 1000000 | date:'yyyy-MM-dd HH:mm:ss' }}</div>
+              <div [attr.title]="row.Count">{{ row.Count }}</div>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </section>
 </div>
