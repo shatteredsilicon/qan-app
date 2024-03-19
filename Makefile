@@ -20,7 +20,7 @@ $(TARBALL_FILE):
 
 	yarn --no-progress --emoji false --ignore-scripts --network-timeout 300000
 
-	tar -czf $(TARBALL_FILE) -C $(shell dirname $(CURDIR)) --transform s/$(shell basename $(CURDIR))/ssm-qan-app/ $(shell basename $(CURDIR))
+	tar -czf $(TARBALL_FILE) -C $(shell dirname $(CURDIR)) --transform s/^$(shell basename $(CURDIR))/ssm-qan-app/ $(shell basename $(CURDIR))
 
 .PHONY: srpm
 srpm: $(SRPM_FILE)
@@ -47,4 +47,4 @@ $(RPM_FILE): $(SRPM_FILE)
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR)/*
+	rm -rf $(BUILDDIR)/{tarballs,rpmbuild,mock,results}
