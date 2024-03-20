@@ -18,7 +18,7 @@ all: srpm rpm
 $(TARBALL_FILE):
 	mkdir -vp $(shell dirname $(TARBALL_FILE))
 
-	yarn --no-progress --emoji false --ignore-scripts --network-timeout 300000
+	COREPACK_ENABLE_DOWNLOAD_PROMPT=0 yarn --no-progress --emoji false --ignore-scripts --network-timeout 300000
 
 	tar -czf $(TARBALL_FILE) -C $(shell dirname $(CURDIR)) --transform s/^$(shell basename $(CURDIR))/ssm-qan-app/ $(shell basename $(CURDIR))
 
