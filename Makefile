@@ -20,7 +20,7 @@ $(TARBALL_FILE):
 
 	COREPACK_ENABLE_DOWNLOAD_PROMPT=0 yarn --no-progress --emoji false --ignore-scripts --network-timeout 300000
 
-	tar -czf $(TARBALL_FILE) -C $(shell dirname $(CURDIR)) --transform s/^$(shell basename $(CURDIR))/ssm-qan-app/ $(shell basename $(CURDIR))
+	tar --exclude-vcs -czf $(TARBALL_FILE) -C $(shell dirname $(CURDIR)) --transform s/^$(shell basename $(CURDIR))/ssm-qan-app/ $(shell basename $(CURDIR))
 
 .PHONY: srpm
 srpm: $(SRPM_FILE)
