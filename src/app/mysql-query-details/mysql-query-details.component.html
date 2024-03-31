@@ -1212,4 +1212,12 @@
       </ngb-panel>
     </ngb-accordion>
   </section>
+
+  <div class="row justify-content-md-center">
+    <button *ngIf="!isLoading && !isQueryInfoLoading && !isExplainLoading"
+          (click)="downloadReport()" class="pmm-button-big checked">
+        <i class="fa fa-file-archive-o" aria-hidden="true"></i>
+        Download Report
+    </button>
+  </div>
 </div>

@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Instance, InstanceService } from '../core/instance.service';
+import { InstanceService } from '../core/instance.service';
 import { CoreComponent, QueryParams } from '../core/core.component';
 import { MySQLQueryDetailsService, QueryDetails, UserSource, Table, DBObjectType, QueryInfo, QueryInfoResult } from './mysql-query-details.service';
 import * as hljs from 'highlight.js';
 import * as vkbeautify from 'vkbeautify';
 import * as moment from 'moment';
-import {NgbAccordion, NgbAccordionConfig, NgbPanelChangeEvent} from '@ng-bootstrap/ng-bootstrap';
-import { stringify } from 'querystring';
+import { MomentFormatPipe } from '../shared/moment-format.pipe';
 
 @Component({
   moduleId: module.id,
@@ -593,5 +592,47 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
     }
 
     return '';
+  }
+
+  downloadReport() {
+    const momentFormatPipe = new MomentFormatPipe();
+    const date = momentFormatPipe.transform(moment.utc(), 'YYYY-MM-DDTHH:mm:ss');
+    const filename = `ssm-${this.dbServer.Name}-${date}-query-${this.queryParams.queryID}-report.json`;
+    const data = {
+      'Query': this.queryDetails?.Example?.Query,
+      'Explain': this.classicExplain,
+      'Tables': this.tables?.map(table => {
+        return {
+          'Db': table.Db,
+          'Table': table.Table,
+          'Create': this.queryInfo[`${table.Db}.${table.Table}`]?.Create,
+          'Index': this.queryInfo[`${table.Db}.${table.Table}`]?.Index
+        };
+      }),
+      'Views': this.views?.map(view => {
+        return {
+          'Db': view.Db,
+          'Name': view.Table,
+          'Create': this.queryInfo[`${view.Db}.${view.Table}`]?.Create,
+          'Index': this.queryInfo[`${view.Db}.${view.Table}`]?.Index
+        }
+      }),
+      'Prodecures': this.queryDetails.Query.Procedures?.map(procedure => {
+        return {
+          'Db': procedure.DB,
+          'Name': procedure.Name,
+          'Create': this.queryInfo[`${procedure.DB}.${procedure.Name}`]?.Create,
+          'Index': this.queryInfo[`${procedure.DB}.${procedure.Name}`]?.Index
+        }
+      })
+    };
+    const blob = new Blob([JSON.stringify(data, null, 4)], {type: "application/json"});
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }
