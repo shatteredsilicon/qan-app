@@ -171,7 +171,7 @@
             </div>
           </div>
 
-          <div *ngIf="instance?.name === 'SNMP' && remoteInstanceCredentials.snmpVersion === '3' && (remoteInstanceCredentials.snmpSecurityLevel === 'authNoPriv' || remoteInstanceCredentials.snmpSecurityLevel === 'authPriv')" class="input-wrapper">
+          <div *ngIf="instance?.name === 'SNMP' && remoteInstanceCredentials.snmpVersion === '3'" class="input-wrapper">
             <div class="row d-flex align-items-center">
               <div class="col-9">
                 <input type="text" class="custom-form-input form-control" placeholder="*Username"
