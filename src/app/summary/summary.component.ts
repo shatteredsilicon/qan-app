@@ -110,12 +110,12 @@ export class SummaryComponent extends CoreComponent {
         this.mongoSummaryLoader = true,
         this.serverSummaryLoader = true;
 
-        this.getServerSummary(this.dbServer.UUID);
+        this.getServerSummary(this.dbServer.Agent?.UUID);
         if (this.dbServer.Subsystem === 'mysql') {
-            this.getMySQLSummary(this.dbServer.UUID);
+            this.getMySQLSummary(this.dbServer.Agent?.UUID);
         }
         if (this.dbServer.Subsystem === 'mongo') {
-            this.getMongoSummary(this.dbServer.UUID)
+            this.getMongoSummary(this.dbServer.Agent?.UUID);
         }
     }
 }
