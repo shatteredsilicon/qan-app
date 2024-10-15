@@ -32,4 +32,18 @@ export class RemoteInstancesListService {
       .delete(url, { headers: this.headers, body: { id: service.id, type: service.type } })
       .toPromise();
   }
+
+  async disableHealthAlerts(node: NodeInstance): Promise<{}> {
+    const url = `/managed/v0/nodes/${node.name}/health-alerts`;
+    return await this.http
+      .put(url, { enabled: false }, {headers: this.headers})
+      .toPromise();
+  }
+
+  async putHealthAlerts(node: NodeInstance, enabled: boolean): Promise<{}> {
+    const url = `/managed/v0/nodes/${node.name}/health-alerts`;
+    return await this.http
+      .put(url, { enabled: enabled }, {headers: this.headers})
+      .toPromise();
+  }
 }

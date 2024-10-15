@@ -4,6 +4,7 @@
       <th></th>
       <th>Name</th>
       <th>Services</th>
+      <th>Health Alerts</th>
       <th>Remove</th>
     </tr>
   </thead>
@@ -18,6 +19,24 @@
         </td>
         <td [attr.aria-expanded]="instance.collapsed">{{ instance.name }}</td>
         <td>{{ instance.services?.length }}</td>
+        <td>
+          <a
+            *ngIf="instance.health_alerts_enabled"
+            href="javascript:void(0)"
+            title="Enabled"
+            (click)="disableHealthAlerts(instance);"
+          >
+            <i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>
+          </a>
+          <a
+            *ngIf="!instance.health_alerts_enabled"
+            href="javascript:void(0)"
+            title="Disabled"
+            (click)="enableHealthAlerts(instance);"
+          >
+            <i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>
+          </a>
+        </td>
         <td>
           <span class="fa fa-trash-o instance-trash" (click)="disableInstance(i, instance)"></span>
         </td>
