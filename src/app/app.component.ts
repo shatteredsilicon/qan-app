@@ -4,6 +4,7 @@ import { InstanceService } from './core/instance.service';
 import { environment } from './environment';
 import * as moment from 'moment';
 import {DOCUMENT} from '@angular/common';
+import { ServerService } from './core/server.service';
 
 @Component({
   selector: 'app-root',
@@ -13,13 +14,15 @@ import {DOCUMENT} from '@angular/common';
 export class AppComponent implements OnInit {
   title = 'Query Analytics';
   version = environment.version;
+  serverVersion = '';
   hideNav = false;
   isInstancesListEmpty: boolean;
   theme = 'app-theme-light';
 
-  constructor(instanceService: InstanceService, @Inject(DOCUMENT) private document) {
+  constructor(instanceService: InstanceService, serverService: ServerService, @Inject(DOCUMENT) private document) {
     // show message how to configure pmm-client.
     this.hideNav = this.inIframe() || instanceService.dbServers.length === 0;
+    this.serverVersion = serverService.serverInfo.version;
   }
 
   /**
