@@ -14,11 +14,16 @@ import { AddRemoteInstanceComponent } from './add-remote-instances/add-remote-in
 import { AddInstanceComponent } from './add-instance/add-instance.component';
 import {HttpClientModule} from '@angular/common/http';
 import { RDSService } from './core/rds.service';
+import { ServerService } from './core/server.service';
+
 export function getInstances(instanceService: InstanceService) {
   return function () { return instanceService.getDBServers(); };
 }
 export function getRDS(rdsService: RDSService) {
   return function () { return rdsService.getRDSInstances(); };
+}
+export function getServer(serverService: ServerService) {
+  return function() { return serverService.getServerInfo(); };
 }
 
 @NgModule({
@@ -50,6 +55,13 @@ export function getRDS(rdsService: RDSService) {
       provide: APP_INITIALIZER,
       useFactory: getRDS,
       deps: [RDSService],
+      multi: true
+    },
+    ServerService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: getServer,
+      deps: [ServerService],
       multi: true
     }
   ],
