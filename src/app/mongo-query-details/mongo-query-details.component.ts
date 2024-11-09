@@ -4,7 +4,7 @@ import { Instance, InstanceService } from '../core/instance.service';
 import { CoreComponent, QueryParams } from '../core/core.component';
 import { MongoQueryDetailsService, QueryDetails } from './mongo-query-details.service';
 import * as hljs from 'highlight.js';
-import * as vkbeautify from 'vkbeautify';
+import * as beautify from 'beautify';
 import * as moment from 'moment';
 
 @Component({
@@ -86,7 +86,7 @@ export class MongoQueryDetailsComponent extends CoreComponent implements OnInit 
         this.firstSeen = moment(this.queryDetails.Query.FirstSeen).calendar(null, {sameElse: 'lll'});
         this.lastSeen = moment(this.queryDetails.Query.LastSeen).calendar(null, {sameElse: 'lll'});
         this.fingerprint = this.queryDetails.Query.Fingerprint;
-        this.queryExample = hljs.highlight('json', vkbeautify.json(this.queryDetails.Example.Query)).value;
+        this.queryExample = hljs.highlight('json', beautify.json(this.queryDetails.Example.Query)).value;
         this.isFirstSeen = moment.utc(this.queryDetails.Query.FirstSeen).valueOf() > moment.utc(this.fromUTCDate).valueOf();
         this.isLoading = false;
       })

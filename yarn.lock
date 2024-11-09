@@ -1840,11 +1840,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/vkbeautify@0.99.2":
-  version "0.99.2"
-  resolved "https://registry.yarnpkg.com/@types/vkbeautify/-/vkbeautify-0.99.2.tgz#f6431c9fb245556257628b0c8a111816e62de16d"
-  integrity sha512-zbBKJTu2GRURMTj0vFSYRTnOB7Fz7uDZEFKLEkF1tbALUWHSPE84/VwCeJtM1YFOavtbp6xylFkLt6OxT6IG9A==
-
 "@types/ws@^8.2.2":
   version "8.5.4"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.4.tgz#bb10e36116d6e570dd943735f86c933c1587b8a5"
@@ -2484,6 +2479,10 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha512-qeFIXtP4MSoi6NLqO12WfqARWWuCKi2Rn/9hJLEmtB5yTNr9DqFWkJRCf2qShWzPeAMRnOgCrq0sg/KLv5ES9w==
   dependencies:
     tweetnacl "^0.14.3"
+
+"beautify@https://github.com/shatteredsilicon/Beautify":
+  version "0.99.1"
+  resolved "https://github.com/shatteredsilicon/Beautify#395ef9f9635ef70b676501df3bddfb395be5a42d"
 
 big.js@^5.2.2:
   version "5.2.2"
@@ -7796,11 +7795,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-vkbeautify@^0.99.3:
-  version "0.99.3"
-  resolved "https://registry.yarnpkg.com/vkbeautify/-/vkbeautify-0.99.3.tgz#4769b3238c5d772c6ea967545dd1df5582f23297"
-  integrity sha512-2ozZEFfmVvQcHWoHLNuiKlUfDKlhh4KGsy54U0UrlLMR1SO+XKAIDqBxtBwHgNrekurlJwE8A9K6L49T78ZQ9Q==
 
 void-elements@^2.0.0:
   version "2.0.1"
