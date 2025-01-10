@@ -282,7 +282,23 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
       to
     )
       .then(data => {
-        this.userSources = data;
+        const userSourceMap: { [key: string]: UserSource } = {};
+        data.forEach(source => {
+          var key = source.User+'@'+source.Host;
+
+          if (!userSourceMap[key]) {
+            userSourceMap[key] = Object.assign({}, source);
+          } else {
+            userSourceMap[key].Count += source.Count;
+            if (source.FirstSeen < userSourceMap[key].FirstSeen) {
+              userSourceMap[key].FirstSeen = source.FirstSeen;
+            }
+            if (source.LastSeen > userSourceMap[key].LastSeen) {
+              userSourceMap[key].LastSeen = source.LastSeen;
+            }
+          }
+        });
+        this.userSources = Object.values(userSourceMap).sort((a, b) => b.Count - a.Count);
       })
       .catch(() => {
         this.userSourceError = "Can't get list of user sources";
