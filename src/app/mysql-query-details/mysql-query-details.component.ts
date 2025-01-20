@@ -396,7 +396,7 @@ export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit 
 
     this.viewInfo = info;
     try {
-      this.createView = hljs.highlight('sql', info.Create).value;
+      this.createView = hljs.highlight('sql', beautify.sql(info.Create)).value;
     } catch (e) { }
 
     if (info.Errors?.length > 0) {

@@ -2482,7 +2482,7 @@ bcrypt-pbkdf@^1.0.0:
 
 "beautify@https://github.com/shatteredsilicon/Beautify":
   version "0.99.1"
-  resolved "https://github.com/shatteredsilicon/Beautify#395ef9f9635ef70b676501df3bddfb395be5a42d"
+  resolved "https://github.com/shatteredsilicon/Beautify#1c036466dd88212a8888da5686ba7866fc8323b4"
 
 big.js@^5.2.2:
   version "5.2.2"
