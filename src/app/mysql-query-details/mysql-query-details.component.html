@@ -856,7 +856,9 @@
               <div [attr.title]="row.Partitions">{{ row.Partitions }}</div>
               <div [attr.title]="row.CreateTable">{{ row.CreateTable }}</div>
               <div [attr.title]="row.Type">{{ row.Type }}</div>
-              <div [attr.title]="row.PossibleKeys">{{ row?.PossibleKeys?.replace(',', ', ') }}</div>
+              <div [attr.title]="row.PossibleKeys">
+                <p *ngFor="let k of (jsonExplain?.query_block?.table?.possible_keys || jsonExplain?.query_block?.nested_loop[0]?.table?.possible_keys || row.PossibleKeys?.split(','))">{{ k }},&nbsp;</p>
+              </div>
               <div [attr.title]="row.Key">{{ row.Key }}</div>
               <div [attr.title]="row.KeyLen">{{ row.KeyLen }}</div>
               <div [attr.title]="row.Ref">{{ row.Ref }}</div>

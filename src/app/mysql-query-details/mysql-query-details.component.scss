@@ -35,6 +35,11 @@ section.explain {
     height: 100%;
     padding: 5px !important;
     vertical-align: middle;
+
+    p {
+      margin-bottom: 0;
+      white-space: nowrap;
+    }
   }
 }
 
