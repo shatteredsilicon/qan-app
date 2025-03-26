@@ -44,8 +44,9 @@
       </form>
     </section>
     <section class="table-body query-profile-table" id="query_profile_table">
-      <div class="grid-container">
+      <div class="grid-container" [style.grid-template-columns]="dbServers.length > 1 ? '1fr 5fr 8fr 7fr 8fr 7fr' : '1fr 9fr 7fr 10fr 9fr'">
         <div>#</div>
+        <div *ngIf="dbServers.length > 1">Host</div>
         <div>Query Abstract</div>
         <div
           (click)="loadQueries('load')"
@@ -73,11 +74,15 @@
         </div>
       </div>
       <div class="grid-container grid-container-data"
+           [style.grid-template-columns]="dbServers.length > 1 ? '1fr 5fr 8fr 7fr 8fr 7fr' : '1fr 9fr 7fr 10fr 9fr'"
            *ngFor="let row of queryProfile; let i = index; let first = first;"
            [routerLink]="['./', 'report', dbServer.Subsystem]"
            [queryParams]="composeQueryParamsForGrid(row.Id)" routerLinkActive="table-selected"
            [class.first-seen-query]="checkFirstSeen(row)">
         <div>{{ i || '' }}</div>
+        <div *ngIf="dbServers.length > 1" style="flex-direction: column; align-items: flex-start; justify-content: center; padding: 8px 10px">
+          <div *ngFor="let host of getHosts(i)">{{ host.Name }}</div>
+        </div>
         <div class="cell-overlay">
           <span class="cell-overlay">
            <a href="javascript:;" title="{{ row.Fingerprint }}">

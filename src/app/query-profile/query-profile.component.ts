@@ -1,6 +1,6 @@
 import { CoreComponent, QueryParams, QanError } from '../core/core.component';
 import { Component } from '@angular/core';
-import { InstanceService } from '../core/instance.service';
+import { InstanceService, Instance } from '../core/instance.service';
 import { QueryProfileService, QanMessage } from './query-profile.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
@@ -64,6 +64,11 @@ export class QueryProfileComponent extends CoreComponent {
     checkFirstSeen(currentQuery) {
       this.isFirstSeen = moment.utc(currentQuery['FirstSeen']).valueOf() > moment.utc(this.fromUTCDate).valueOf();
       return this.isFirstSeen;
+    }
+
+    getHosts(i: number): Array<Instance> {
+        if (!this.queryProfile || !Array.isArray(this.queryProfile) || !this.queryProfile[i] || !this.queryProfile[i].hasOwnProperty('InstanceIDs') || !this.queryProfile[i]['InstanceIDs']) { return []; }
+        return this.dbServers.filter(s => this.queryProfile[i]['InstanceIDs'].includes(s.Id));
     }
 
     public async loadQueries(sortKey: string = null) {
