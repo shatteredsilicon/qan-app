@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
 import { ErrorHandler } from '@angular/core';
 
 import { SharedModule } from '../shared/shared.module';
-import { NavComponent } from './nav/nav.component';
 import { JSONTreeComponent } from './json-tree/json-tree.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 // import { QanErrorHandler } from './qan-error.handler';
@@ -32,10 +31,10 @@ import {RemoteInstancesListComponent} from '../remote-instances-list/remote-inst
 
 @NgModule({
     imports: [CommonModule, SharedModule, ClipboardModule],
-    declarations: [NavComponent, PageNotFoundComponent, QueryProfileComponent,
+    declarations: [PageNotFoundComponent, QueryProfileComponent,
         MySQLQueryDetailsComponent, MongoQueryDetailsComponent,
         SummaryComponent, SettingsComponent, JSONTreeComponent, RemoteInstancesListComponent],
-    exports: [NavComponent, PageNotFoundComponent, QueryProfileComponent,
+    exports: [PageNotFoundComponent, QueryProfileComponent,
         MySQLQueryDetailsComponent, MongoQueryDetailsComponent,
         SummaryComponent, SettingsComponent, JSONTreeComponent],
     providers: [InstanceService, QueryProfileService, MySQLQueryDetailsService,
