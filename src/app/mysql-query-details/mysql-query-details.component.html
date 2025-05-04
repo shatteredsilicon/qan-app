@@ -857,7 +857,7 @@
               <div [attr.title]="row.CreateTable">{{ row.CreateTable }}</div>
               <div [attr.title]="row.Type">{{ row.Type }}</div>
               <div [attr.title]="row.PossibleKeys">
-                <p *ngFor="let k of (jsonExplain?.query_block?.table?.possible_keys || jsonExplain?.query_block?.nested_loop[0]?.table?.possible_keys || row.PossibleKeys?.split(',')); let isLast = last;">
+                <p *ngFor="let k of (jsonExplain?.query_block?.table?.possible_keys || jsonExplain?.query_block?.nested_loop?.[0]?.table?.possible_keys || row.PossibleKeys?.split(',')); let isLast = last;">
                   {{ k }}<span *ngIf="!isLast">,&nbsp;</span>
                 </p>
               </div>
