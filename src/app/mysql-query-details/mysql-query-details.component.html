@@ -861,7 +861,11 @@
                   {{ k }}<span *ngIf="!isLast">,&nbsp;</span>
                 </p>
               </div>
-              <div [attr.title]="row.Key">{{ row.Key }}</div>
+              <div [attr.title]="row.Key">
+                <p *ngFor="let k of row.Key?.split(','); let isLast = last;">
+                  {{ k }}<span *ngIf="!isLast">,&nbsp;</span>
+                </p>
+              </div>
               <div [attr.title]="row.KeyLen">{{ row.KeyLen }}</div>
               <div [attr.title]="row.Ref">{{ row.Ref }}</div>
               <div [attr.title]="row.Rows">{{ row.Rows }}</div>
