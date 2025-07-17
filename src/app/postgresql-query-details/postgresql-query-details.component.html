@@ -1,0 +1,440 @@
+<header class="section-title" *ngIf="!isSummary">
+  <h3 class="d-flex justify-content-between w-100">
+    <span class="query-abstract">{{ queryDetails?.Query?.Abstract }}</span>
+    <span class="query-id">{{ queryDetails?.Query?.Id }}</span>
+  </h3>
+</header>
+<section class="server-summary" *ngIf="!!isSummary || !!queryDetails?.Metrics2">
+  <header class="server-summary-title section-title" *ngIf="!!isSummary">
+    <h3 class="d-inline">
+      Server Summary
+    </h3>
+  </header>
+  <ngb-accordion [activeIds]="accordionIds.serverSummary">
+    <ngb-panel id="metrics-table" class="accordion-inner-table">
+      <ng-template ngbPanelTitle>
+        <div class="accordion-title">
+          <h5>Metrics&nbsp;</h5>
+          <span class="query-information" *ngIf="!isSummary">
+            Query first seen: <strong class="first-seen-time" [class.first-seen]="isFirstSeen">{{ firstSeen }}</strong>
+            Last seen: <strong>{{ lastSeen }}</strong>
+          </span>
+        </div>
+      </ng-template>
+      <ng-template ngbPanelContent>
+        <div class="table-wrapper metrics-table" *ngIf="!isLoading">
+          <div class="table-header grid-container table-header-row">
+            <div>Metrics</div>
+            <div>Rate/Sec</div>
+            <div>Sum</div>
+            <div>Per Query Stats</div>
+          </div>
+          <div class="table-body">
+            <div class="table-body-row grid-container">
+              <div><span>Query Count</span></div>
+              <div class="flex-container">
+                <div class=" justify-content-start">
+                  <span class="unit unit-per-sec">{{ queryDetails?.Metrics2?.Query_count_per_sec | humanize : 'number' }}</span>
+                </div>
+                <div class="scaling-svg-container app-tooltip" [appLoadSparklines]="queryDetails?.Sparks2"
+                     data-tooltip="Loading..." xkey="Ts" ykey="Query_count_per_sec" measurement="number">
+                </div>
+              </div>
+              <div>
+                <span>{{ queryDetails?.Metrics2?.Query_count | humanize : 'number' }}
+                  <small>
+                    <span *ngIf="!isSummary" class="text-primary non-summary-info">
+                      <span>{{ queryDetails?.Metrics2?.Query_count_of_total | humanize : 'percent' }}</span> of total
+                    </span>
+                  </small>
+                </span>
+              </div>
+              <div class="flex-container">
+                <div class=" justify-content-start">
+                  <span class="unit unit-avg">{{ queryDetails?.Metrics2?.Query_time_avg | humanize : 'time' }}</span>
+                </div>
+                <div class="scaling-svg-container app-tooltip"
+                     data-tooltip="Loading..."
+                     [appLatencyChart]="queryDetails?.Metrics2"
+                     measurement="time"
+                     metricPrefix="Query_time">
+                </div>
+              </div>
+            </div>
+            <div class="table-body-row grid-container">
+              <div><span>Query Time</span></div>
+              <div class="flex-container">
+                <div class=" justify-content-start">
+                  <span class="unit unit-load">{{ queryDetails?.Metrics2?.Query_time_sum_per_sec | humanize : 'number' }}</span>
+                </div>
+                <div class="scaling-svg-container app-tooltip" [appLoadSparklines]="queryDetails?.Sparks2"
+                     data-tooltip="Loading..." xkey="Ts" ykey="Query_time_sum_per_sec" measurement="number">
+                </div>
+              </div>
+              <div class="">
+                <span class="sum text-left">{{ queryDetails?.Metrics2?.Query_time_sum | humanize : 'time' }}
+                  <small>
+                    <span *ngIf="!isSummary" class="text-primary non-summary-info">
+                      <span>{{ queryDetails?.Metrics2?.Query_time_sum_of_total | humanize : 'percent' }}</span> of total
+                    </span>
+                  </small>
+                </span>
+              </div>
+              <div class="flex-container">
+                <div class=" justify-content-start">
+                  <span class="unit unit-avg">{{ queryDetails?.Metrics2?.Query_time_avg | humanize : 'time' }}</span>
+                </div>
+                <div class="scaling-svg-container app-tooltip"
+                     data-tooltip="Loading..."
+                     [appLatencyChart]="queryDetails?.Metrics2"
+                     measurement="time"
+                     metricPrefix="Query_time">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+</section>
+<!--- additional info for query only-->
+<div class="sections-wrapper" *ngIf="!isSummary">
+  <section class="query" *ngIf="!!fingerprint || !!queryExample">
+    <header class="section-title">
+      <h3 class="d-flex">QUERY</h3>
+    </header>
+    <ngb-accordion [activeIds]="accordionIds.querySection" #queryAcc="ngbAccordion">
+      <ngb-panel *ngIf="!!fingerprint" id="query-fingerprint">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>Fingerprint</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isLoading">
+            <pre><code [innerHTML]="fingerprint"></code></pre>
+            <button class="pmm-button"
+                    id="copyFingerprint"
+                    ngxClipboard
+                    [cbContent]="queryDetails.Query.Fingerprint"
+                    (cbOnSuccess)="showSuccessNotification('fingerprint')"
+                    [class.btn-copied]="isCopied.fingerprint">Copy to clipboard
+            </button>
+          </div>
+        </ng-template>
+      </ngb-panel>
+      <ngb-panel *ngIf="!!queryExample" class="query-example query-panel" id="query-example">
+        <ng-template ngbPanelTitle class="ngb-panel-title">
+          <div class="accordion-title">
+            <h5 class="title">Example</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isLoading">
+            <pre><code [innerHTML]="queryExample"></code></pre>
+            <button class="pmm-button"
+                    id="copyQueryExample"
+                    ngxClipboard
+                    [cbContent]="queryDetails.Example.Query"
+                    (cbOnSuccess)="showSuccessNotification('queryExample')"
+                    [class.btn-copied]="isCopied.queryExample">Copy to clipboard
+            </button>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </section>
+
+  <section class="explain"
+           *ngIf="!!queryExample || textExplainError || !!jsonExplain || !!jsonExplainError || !!visualExplain || !!visualExplainError">
+    <header class="section-title">
+      <h3>EXPLAIN</h3>
+      <form class="search-input explain-search-input">
+        <i class="fa fa-database" aria-hidden="true"></i>
+        <input type="text" class="form-control"
+               [(ngModel)]="dbName" [ngModelOptions]="{standalone: true}"
+               id="databaseInput" placeholder="`database-name`">
+        <button class="search-button" [disabled]="!dbName" (click)="getExplain();" type="submit">
+          EXPLAIN
+        </button>
+      </form>
+    </header>
+    <ngb-accordion [activeIds]="accordionIds.explainSection" class="accordion-inner-table">
+      <ngb-panel id="text-explain">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>TEXT</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isExplainLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div *ngIf="!isExplainLoading && textExplainError" class="alert alert-warning w-75 mx-auto m-2"
+               role="alert">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            {{ textExplainError }}
+          </div>
+          <div class="data-output" *ngIf="!isExplainLoading && !textExplainError">
+            <pre><code class="language-plaintext">{{ textExplain }}</code></pre>
+          </div>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel id="json-explain" *ngIf="!!jsonExplain || !!jsonExplainError">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>JSON</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isExplainLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isExplainLoading && !jsonExplainError">
+            <app-json-tree [json]="jsonExplain"></app-json-tree>
+            <button class="pmm-button"
+                    id="copyJson"
+                    ngxClipboard
+                    [cbContent]="jsonExplainString"
+                    (cbOnSuccess)="showSuccessNotification('jsonExplain')"
+                    [class.btn-copied]="isCopied.jsonExplain">Copy to clipboard
+            </button>
+          </div>
+          <div *ngIf="!isExplainLoading && jsonExplainError" class="alert alert-warning w-75 mx-auto m-2" role="alert">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            {{ jsonExplainError }}
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </section>
+
+  <section class="tables"
+           *ngIf="!!createTable || !!createTableError || !!statusTable || !!statusTableError || !!indexTable || !!indexTableError">
+    <header class="section-title">
+      <h3>TABLES</h3>
+      <form class="search-input tables-input" (submit)="addDBTable();">
+        <label for="dbTblNamesInput">schema and table</label>
+        <input type="text" size="50" class="form-control"
+               id="dbTblNamesInput" [(ngModel)]="newDBTblNames"
+               [ngModelOptions]="{standalone: true}"
+               placeholder="`schema-name`.`table-name`">
+        <button [disabled]="!newDBTblNames" (click)="addDBTable();"
+                class="search-button" type="submit">
+          ADD
+        </button>
+      </form>
+    </header>
+    <section class="item-buttons-wrapper">
+      <div *ngFor="let item of tables" class="btn-group" role="group" aria-label="Tables">
+        <button type="button" class="btn-tables" (click)="selectTableInfo(item.Db, item.Table);"
+                [ngClass]="isSelectedDbTbl(item) ? 'checked' : ''">
+          `{{ item.Db }}`.`{{ item.Table }}`
+        </button>
+        <button type="button" class="btn-tables btn-tables-remove" (click)="removeDBTable(item);">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+    </section>
+    <ngb-accordion [activeIds]="accordionIds.tableSection">
+      <ngb-panel id="table-create" *ngIf="!!createTable || !!createTableError">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>CREATE</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && createTableError">
+            <div class="alert alert-warning w-75 mx-auto m-2"
+                 role="alert">
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              {{ createTableError }}
+            </div>
+          </div>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && !createTableError">
+            <pre><code [innerHTML]="createTable"></code></pre>
+            <button class="pmm-button"
+                    id="copyCreateTable"
+                    ngxClipboard
+                    [cbContent]="tableInfo.Create"
+                    (cbOnSuccess)="showSuccessNotification('createTable')"
+                    [class.btn-copied]="isCopied.createTable">Copy to clipboard
+            </button>
+          </div>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel id="table-status" class="accordion-inner-table" *ngIf="!!statusTable || !!statusTableError">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>STATUS</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent class="accordion-inner-table">
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div *ngIf="!isQueryInfoLoading && !!statusTableError" class="alert alert-warning w-75 mx-auto m-2"
+               role="alert">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            {{ statusTableError }}
+          </div>
+          <div class="table-wrapper status-table-wrapper" *ngIf="!isQueryInfoLoading && !statusTableError">
+            <div class="table-header grid-container table-header-row">
+              <div>Name</div>
+              <div>Value</div>
+            </div>
+            <div class="table-body grid-container" *ngFor="let item of statusTable | mapToIterable">
+              <div>{{ item.key }}</div>
+              <div
+                *ngIf="['AvgRowLength', 'DataLength', 'IndexLength', 'DataFree', 'MaxDataLength'].indexOf(item.key) > -1">
+                {{ item.val | humanize : 'size' }}
+              </div>
+              <div *ngIf="['Rows'].indexOf(item.key) > -1">{{ item.val | humanize : 'number' }}</div>
+              <div
+                *ngIf="['Rows', 'AvgRowLength', 'DataLength', 'IndexLength', 'DataFree', 'MaxDataLength'].indexOf(item.key) === -1">
+                {{ item.val === null ? '-' : item.val }}
+              </div>
+              <div *ngIf="tableInfo?.Status?.length === 0">No data.</div>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel id="table-indexes" *ngIf="!!indexTable || !!indexTableError">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>INDEXES</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent class="accordion-inner-table">
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading table-spinner"></i>
+          <div *ngIf="!isQueryInfoLoading && !!indexTableError"
+               class="alert alert-warning w-75 mx-auto m-2 index-table-error"
+               role="alert">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            {{ indexTableError }}
+          </div>
+          <div class="table-wrapper indexes-table" *ngIf="!isQueryInfoLoading && !indexTableError">
+            <div class="table-header grid-container table-header-row">
+              <div>KeyName</div>
+              <div>idx_scan</div>
+              <div>idx_tup_read</div>
+              <div>idx_tup_fetch</div>
+            </div>
+            <div class="grid-container-wrapper" *ngFor="let idx of indexTable | mapToIterable">
+              <div class="table-body grid-container">
+                <div>{{ idx.key }}</div>
+                <div>{{ idx.val.IdxScan }}</div>
+                <div>{{ idx.val.IdxTupRead }}</div>
+                <div>{{ idx.val.IdxTupFetch }}</div>
+              </div>
+              <div *ngIf="tableInfo?.Index?.length === 0" class="no-data">No data.</div>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </section>
+
+  <section class="procedures"
+    *ngIf="!!createProcedure || !!createProcedureError">
+    <header class="section-title">
+      <h3>PROCEDURES</h3>
+      <form class="search-input tables-input" (submit)="addDBProcedure();">
+        <label for="dbProcedureNamesInput" style="white-space: nowrap;">DB and name</label>
+        <input type="text" size="50" class="form-control" id="dbProcedureNamesInput" [(ngModel)]="newDBProcedureNames"
+          [ngModelOptions]="{standalone: true}" placeholder="`database`.`procedure`">
+        <button [disabled]="!newDBProcedureNames" (click)="addDBProcedure();" class="search-button" type="submit">
+          ADD
+        </button>
+      </form>
+    </header>
+    <section class="item-buttons-wrapper">
+      <div *ngFor="let item of queryDetails?.Query?.Procedures" class="btn-group" role="group" aria-label="Procedures">
+        <button type="button" class="btn-tables" (click)="selectProcedureInfo(item.DB, item.Name);"
+          [ngClass]="isSelectedDbProcedure(item) ? 'checked' : ''">
+          `{{ item.DB }}`.`{{ item.Name }}`
+        </button>
+        <button type="button" class="btn-tables btn-tables-remove" (click)="removeDBProcedure(item);">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+    </section>
+    <ngb-accordion [activeIds]="accordionIds.procedureSection">
+      <ngb-panel id="procedure-create" *ngIf="!!createProcedure || !!createProcedureError">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>CREATE</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && createProcedureError">
+            <div class="alert alert-warning w-75 mx-auto m-2" role="alert">
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              {{ createProcedureError }}
+            </div>
+          </div>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && !createProcedureError">
+            <pre><code [innerHTML]="createProcedure"></code></pre>
+            <button class="pmm-button" id="copyCreateProcedure" ngxClipboard [cbContent]="procedureInfo.Create"
+              (cbOnSuccess)="showSuccessNotification('createProcedure')" [class.btn-copied]="isCopied.createProcedure">Copy to
+              clipboard
+            </button>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </section>
+
+  <section class="views" *ngIf="!!createView || !!createViewError">
+    <header class="section-title">
+      <h3>VIEWS</h3>
+      <form class="search-input tables-input" (submit)="addDBView();">
+        <label for="dbViewNamesInput" style="white-space: nowrap;">DB and name</label>
+        <input type="text" size="50" class="form-control" id="dbViewNamesInput" [(ngModel)]="newDBViewNames"
+          [ngModelOptions]="{standalone: true}" placeholder="`database-name`.`view-name`">
+        <button [disabled]="!newDBViewNames" (click)="addDBView();" class="search-button" type="submit">
+          ADD
+        </button>
+      </form>
+    </header>
+    <section class="item-buttons-wrapper">
+      <div *ngFor="let item of views" class="btn-group" role="group" aria-label="Views">
+        <button type="button" class="btn-tables" (click)="selectViewInfo(item.Db, item.Table);"
+          [ngClass]="isSelectedDbView(item) ? 'checked' : ''">
+          `{{ item.Db }}`.`{{ item.Table }}`
+        </button>
+        <button type="button" class="btn-tables btn-tables-remove" (click)="removeDBView(item);">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+    </section>
+    <ngb-accordion [activeIds]="accordionIds.viewSection">
+      <ngb-panel id="view-create" *ngIf="!!createView || !!createViewError">
+        <ng-template ngbPanelTitle>
+          <div class="accordion-title">
+            <h5>CREATE</h5>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <i *ngIf="isQueryInfoLoading" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && createViewError">
+            <div class="alert alert-warning w-75 mx-auto m-2" role="alert">
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              {{ createViewError }}
+            </div>
+          </div>
+          <div class="data-output" *ngIf="!isQueryInfoLoading && !createViewError">
+            <pre><code [innerHTML]="createView"></code></pre>
+            <button class="pmm-button" id="copyCreateView" ngxClipboard [cbContent]="viewInfo.Create"
+              (cbOnSuccess)="showSuccessNotification('createView')"
+              [class.btn-copied]="isCopied.createView">Copy to
+              clipboard
+            </button>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </section>
+</div>

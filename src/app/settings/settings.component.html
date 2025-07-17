@@ -63,13 +63,21 @@
                 </div>
               </div>
 
-              <div *ngIf="dbServer.Subsystem === 'mysql'" class="form-group row">
+              <div *ngIf="dbServer.Subsystem === 'mysql' || dbServer.Subsystem === 'postgresql'" class="form-group row">
                 <label for="inputSource" class="col-sm-4 col-form-label">Collect from</label>
                 <div class="col-sm-4 p-0">
-                  <select class="form-control" id="inputSource" name="source" [(ngModel)]="collectFrom"
+                  <select *ngIf="dbServer.Subsystem === 'mysql'" class="form-control" id="inputSource" name="source" [(ngModel)]="collectFrom"
                           [ngModelOptions]="{standalone: true}">
                     <option
                       *ngFor="let source of [{key: 'slowlog', name: 'Slow log'}, {key: 'perfschema', name: 'Performance Schema'}]"
+                      [value]="source.key">
+                      {{ source.name }}
+                    </option>
+                  </select>
+                  <select *ngIf="dbServer.Subsystem === 'postgresql'" class="form-control" id="inputSource" name="source" [(ngModel)]="collectFrom"
+                          [ngModelOptions]="{standalone: true}">
+                    <option
+                      *ngFor="let source of [{key: 'logfile', name: 'Log file'}, {key: 'table', name: 'Table'}]"
                       [value]="source.key">
                       {{ source.name }}
                     </option>
