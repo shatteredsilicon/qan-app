@@ -5,6 +5,7 @@ import { PageNotFoundComponent } from './core/page-not-found/page-not-found.comp
 import { QueryProfileComponent } from './query-profile/query-profile.component';
 import { MySQLQueryDetailsComponent } from './mysql-query-details/mysql-query-details.component';
 import { MongoQueryDetailsComponent } from './mongo-query-details/mongo-query-details.component';
+import { PostgreSQLQueryDetailsComponent } from './postgresql-query-details/postgresql-query-details.component';
 import { SummaryComponent } from './summary/summary.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AddInstanceComponent } from './add-instance/add-instance.component';
@@ -48,7 +49,8 @@ const routes: Routes = [
     {
         path: 'profile', component: QueryProfileComponent, canActivate: [RegisteredInstanceGuard], children: [
             { path: 'report/mysql', component: MySQLQueryDetailsComponent, canActivate: [RegisteredInstanceGuard] },
-            { path: 'report/mongo', component: MongoQueryDetailsComponent, canActivate: [RegisteredInstanceGuard] }
+            { path: 'report/mongo', component: MongoQueryDetailsComponent, canActivate: [RegisteredInstanceGuard] },
+            { path: 'report/postgresql', component: PostgreSQLQueryDetailsComponent, canActivate: [RegisteredInstanceGuard] }
         ]
     },
     { path: 'sys-summary', component: SummaryComponent, pathMatch: 'full', canActivate: [RegisteredInstanceGuard] },

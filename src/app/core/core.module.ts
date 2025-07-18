@@ -19,6 +19,8 @@ import { MySQLQueryDetailsComponent } from '../mysql-query-details/mysql-query-d
 import { MySQLQueryDetailsService } from '../mysql-query-details/mysql-query-details.service';
 import { MongoQueryDetailsComponent } from '../mongo-query-details/mongo-query-details.component';
 import { MongoQueryDetailsService } from '../mongo-query-details/mongo-query-details.service';
+import { PostgreSQLQueryDetailsComponent } from '../postgresql-query-details/postgresql-query-details.component';
+import { PostgreSQLQueryDetailsService } from '../postgresql-query-details/postgresql-query-details.service';
 import { SummaryComponent } from '../summary/summary.component';
 import { SummaryService } from '../summary/summary.service';
 import { SettingsComponent } from '../settings/settings.component';
@@ -32,13 +34,13 @@ import {RemoteInstancesListComponent} from '../remote-instances-list/remote-inst
 @NgModule({
     imports: [CommonModule, SharedModule, ClipboardModule],
     declarations: [PageNotFoundComponent, QueryProfileComponent,
-        MySQLQueryDetailsComponent, MongoQueryDetailsComponent,
+        MySQLQueryDetailsComponent, MongoQueryDetailsComponent, PostgreSQLQueryDetailsComponent,
         SummaryComponent, SettingsComponent, JSONTreeComponent, RemoteInstancesListComponent],
     exports: [PageNotFoundComponent, QueryProfileComponent,
-        MySQLQueryDetailsComponent, MongoQueryDetailsComponent,
+        MySQLQueryDetailsComponent, MongoQueryDetailsComponent, PostgreSQLQueryDetailsComponent,
         SummaryComponent, SettingsComponent, JSONTreeComponent],
     providers: [InstanceService, QueryProfileService, MySQLQueryDetailsService,
-        MongoQueryDetailsService, SummaryService, SettingsService,
+        MongoQueryDetailsService, PostgreSQLQueryDetailsService, SummaryService, SettingsService,
       AddAmazonRDSService, AddRemoteInstanceService, RemoteInstancesListService]
 })
 export class CoreModule {

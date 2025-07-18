@@ -31,7 +31,7 @@ export class InstanceService {
         ) as Instance[];
 
         this.dbServers = (response.filter(
-          (i: Instance) => i.Subsystem === 'mysql' || i.Subsystem === 'mongo'
+          (i: Instance) => i.Subsystem === 'mysql' || i.Subsystem === 'mongo' || i.Subsystem === 'postgresql'
         ) as Instance[]);
 
         const agentsByParentUUID: { [key: string]: Instance } = {};
