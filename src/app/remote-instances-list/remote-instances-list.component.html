@@ -21,7 +21,7 @@
         <td>{{ instance.services?.length }}</td>
         <td>
           <a
-            *ngIf="instance.health_alerts_enabled"
+            *ngIf="instance.health_alerts_state === 1"
             href="javascript:void(0)"
             title="Enabled"
             (click)="disableHealthAlerts(instance);"
@@ -29,7 +29,15 @@
             <i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>
           </a>
           <a
-            *ngIf="!instance.health_alerts_enabled"
+            *ngIf="instance.health_alerts_state === 2"
+            href="javascript:void(0)"
+            title="One or more health alerts are not enabled, consider re-trigger the switch to enable them"
+            (click)="disableHealthAlerts(instance);"
+          >
+            <i class="fa fa-toggle-on fa-lg text-warning" aria-hidden="true"></i>
+          </a>
+          <a
+            *ngIf="!instance.health_alerts_state"
             href="javascript:void(0)"
             title="Disabled"
             (click)="enableHealthAlerts(instance);"
