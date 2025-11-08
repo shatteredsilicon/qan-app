@@ -86,7 +86,7 @@ export class RemoteInstancesListComponent implements OnInit {
       try {
         const res = await this.remoteInstancesListService.putHealthAlerts(node, false);
         const oriNode = this.allInstances?.find((v, i) => v.name === node.name );
-        if (oriNode) oriNode.health_alerts_enabled = false;
+        if (oriNode) oriNode.health_alerts_state = 0;
       } catch (err) {
         return;
       }
@@ -97,7 +97,7 @@ export class RemoteInstancesListComponent implements OnInit {
     try {
       const res = await this.remoteInstancesListService.putHealthAlerts(node, true);
       const oriNode = this.allInstances?.find((v, i) => v.name === node.name );
-      if (oriNode) oriNode.health_alerts_enabled = true;
+      if (oriNode) oriNode.health_alerts_state = 1;
     } catch (err) {
       return;
     }
