@@ -206,10 +206,11 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
       dbServerUUID,
       this.dbName,
       this.queryDetails.Query.Tables ? this.queryDetails.Query.Tables : [],
-      this.queryDetails.Query.Procedures ? this.queryDetails.Query.Procedures : []
+      this.queryDetails.Query.Procedures ? this.queryDetails.Query.Procedures : [],
+      this.queryDetails?.Example?.Query || ''
     )
       .then(data => {
-        if (this.queryExample) {
+        if (this.queryExample && !data.SkipExplain) {
           this.getExplain();
         }
 
@@ -358,7 +359,8 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
         this.dbServer.UUID,
         this.dbName,
         [{ Db: db, Table: tbl }],
-        []
+        [],
+        ''
       )
         .then(data => {
           this.appendQueryInfo(data);
@@ -389,7 +391,8 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
         this.dbServer.UUID,
         this.dbName,
         [],
-        [{ DB: db, Name: name }]
+        [{ DB: db, Name: name }],
+        ''
       )
         .then(data => {
           this.appendQueryInfo(data);
@@ -419,7 +422,8 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
         this.dbServer.UUID,
         this.dbName,
         [{ Db: db, Table: name }],
-        []
+        [],
+        ''
       )
         .then(data => {
           this.appendQueryInfo(data);

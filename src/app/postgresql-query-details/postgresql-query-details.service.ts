@@ -28,6 +28,7 @@ export interface QueryInfo {
 export interface QueryInfoResult {
   GuessDB: GuessDB | null;
   Info: { [k: string]: QueryInfo } | null;
+  SkipExplain: boolean;
 }
 
 export interface QueryClass {
@@ -126,7 +127,7 @@ export class PostgreSQLQueryDetailsService {
     return response as ServerSummary;
   }
 
-  getQueryInfo(agentUUID: string, dbServerUUID: string, dbName: string, tables: Array<Table>, procedures: Array<Procedure>) {
+  getQueryInfo(agentUUID: string, dbServerUUID: string, dbName: string, tables: Array<Table>, procedures: Array<Procedure>, queryExample: string) {
     const url = `/qan-api/agents/${agentUUID}/cmd`;
 
     const data = {
@@ -136,6 +137,7 @@ export class PostgreSQLQueryDetailsService {
       Index: tables,
       Status: tables,
       Procedure: procedures,
+      queryExample: queryExample
     };
 
     const params = {
