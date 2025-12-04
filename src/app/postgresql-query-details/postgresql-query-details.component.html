@@ -241,6 +241,7 @@
         <ng-template ngbPanelTitle>
           <div class="accordion-title">
             <h5>CREATE</h5>
+            <p *ngIf="isTableSchemaGuessed">(table schema is guessed)</p>
           </div>
         </ng-template>
         <ng-template ngbPanelContent>
@@ -269,6 +270,7 @@
         <ng-template ngbPanelTitle>
           <div class="accordion-title">
             <h5>STATUS</h5>
+            <p *ngIf="isTableSchemaGuessed">(table schema is guessed)</p>
           </div>
         </ng-template>
         <ng-template ngbPanelContent class="accordion-inner-table">
@@ -304,6 +306,7 @@
         <ng-template ngbPanelTitle>
           <div class="accordion-title">
             <h5>INDEXES</h5>
+            <p *ngIf="isTableSchemaGuessed">(table schema is guessed)</p>
           </div>
         </ng-template>
         <ng-template ngbPanelContent class="accordion-inner-table">
@@ -365,6 +368,7 @@
         <ng-template ngbPanelTitle>
           <div class="accordion-title">
             <h5>CREATE</h5>
+            <p *ngIf="isProcedureSchemaGuessed">(table schema is guessed)</p>
           </div>
         </ng-template>
         <ng-template ngbPanelContent>
@@ -415,6 +419,7 @@
         <ng-template ngbPanelTitle>
           <div class="accordion-title">
             <h5>CREATE</h5>
+            <p *ngIf="isViewSchemaGuessed">(table schema is guessed)</p>
           </div>
         </ng-template>
         <ng-template ngbPanelContent>

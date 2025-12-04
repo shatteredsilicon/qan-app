@@ -23,6 +23,7 @@ export interface QueryInfo {
   Status: any
   Index: any
   Errors: Array<string>
+  IsSchemaGuessed: boolean
 }
 
 export interface QueryInfoResult {

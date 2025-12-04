@@ -39,6 +39,9 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
   public dbTblNames: string;
   public dbProcedureNames: string;
   public dbViewNames: string;
+  public isTableSchemaGuessed: boolean;
+  public isViewSchemaGuessed: boolean;
+  public isProcedureSchemaGuessed: boolean;
   protected newDBTblNames: string;
   protected newDBProcedureNames: string;
   protected newDBViewNames: string;
@@ -123,6 +126,9 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
     this.statusTable = this.indexTable = this.createTable = this.createProcedure = this.createView = '';
     this.statusTableError = this.indexTableError = this.createTableError = this.createProcedureError = this.createViewError = '';
     this.queryExample = '';
+    this.isTableSchemaGuessed = false;
+    this.isViewSchemaGuessed = false;
+    this.isProcedureSchemaGuessed = false;
     this.jsonExplainError = this.textExplainError = '';
     this.jsonExplain = this.jsonExplainString = this.textExplain = '';
     try {
@@ -257,7 +263,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
 
     const info = this.queryInfo && (this.queryInfo[`${dbName}.${tblName}`] as QueryInfo);
     if (!info) return;
-
+    this.isTableSchemaGuessed = info.IsSchemaGuessed
     this.tableInfo = info;
     this.statusTable = info.Status;
     this.indexTable = info.Index;
@@ -296,6 +302,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
 
     const info = this.queryInfo && (this.queryInfo[`${dbName}.${procedureName}`] as QueryInfo);
     if (!info) return;
+    this.isProcedureSchemaGuessed = info.IsSchemaGuessed;
     this.procedureInfo = info;
     try {
       this.createProcedure = hljs.highlight('sql', info.Create).value;
@@ -325,7 +332,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
 
     const info = this.queryInfo && (this.queryInfo[`${dbName}.${viewName}`] as QueryInfo);
     if (!info) return;
-
+    this.isViewSchemaGuessed = info.IsSchemaGuessed;
     this.viewInfo = info;
     try {
       this.createView = hljs.highlight('sql', beautify.sql(info.Create)).value;
