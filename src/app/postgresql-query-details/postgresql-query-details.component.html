@@ -218,7 +218,7 @@
         <input type="text" size="50" class="form-control"
                id="dbTblNamesInput" [(ngModel)]="newDBTblNames"
                [ngModelOptions]="{standalone: true}"
-               placeholder="`schema-name`.`table-name`">
+               placeholder="`schema`.`table`">
         <button [disabled]="!newDBTblNames" (click)="addDBTable();"
                 class="search-button" type="submit">
           ADD
@@ -344,16 +344,16 @@
     <header class="section-title">
       <h3>PROCEDURES</h3>
       <form class="search-input tables-input" (submit)="addDBProcedure();">
-        <label for="dbProcedureNamesInput" style="white-space: nowrap;">DB and name</label>
+        <label for="dbProcedureNamesInput" style="white-space: nowrap;">schema and name</label>
         <input type="text" size="50" class="form-control" id="dbProcedureNamesInput" [(ngModel)]="newDBProcedureNames"
-          [ngModelOptions]="{standalone: true}" placeholder="`database`.`procedure`">
+          [ngModelOptions]="{standalone: true}" placeholder="`schema`.`procedure`">
         <button [disabled]="!newDBProcedureNames" (click)="addDBProcedure();" class="search-button" type="submit">
           ADD
         </button>
       </form>
     </header>
     <section class="item-buttons-wrapper">
-      <div *ngFor="let item of queryDetails?.Query?.Procedures" class="btn-group" role="group" aria-label="Procedures">
+      <div *ngFor="let item of procedures" class="btn-group" role="group" aria-label="Procedures">
         <button type="button" class="btn-tables" (click)="selectProcedureInfo(item.DB, item.Name);"
           [ngClass]="isSelectedDbProcedure(item) ? 'checked' : ''">
           `{{ item.DB }}`.`{{ item.Name }}`
@@ -395,9 +395,9 @@
     <header class="section-title">
       <h3>VIEWS</h3>
       <form class="search-input tables-input" (submit)="addDBView();">
-        <label for="dbViewNamesInput" style="white-space: nowrap;">DB and name</label>
+        <label for="dbViewNamesInput" style="white-space: nowrap;">schema and name</label>
         <input type="text" size="50" class="form-control" id="dbViewNamesInput" [(ngModel)]="newDBViewNames"
-          [ngModelOptions]="{standalone: true}" placeholder="`database-name`.`view-name`">
+          [ngModelOptions]="{standalone: true}" placeholder="`schema`.`view`">
         <button [disabled]="!newDBViewNames" (click)="addDBView();" class="search-button" type="submit">
           ADD
         </button>

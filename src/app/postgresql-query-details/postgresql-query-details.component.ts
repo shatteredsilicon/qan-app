@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { InstanceService } from '../core/instance.service';
 import { CoreComponent, QueryParams } from '../core/core.component';
-import { PostgreSQLQueryDetailsService, QueryDetails, Table, DBObjectType, QueryInfo, QueryInfoResult } from './postgresql-query-details.service';
+import { PostgreSQLQueryDetailsService, QueryDetails, Table, Procedure, DBObjectType, QueryInfo, QueryInfoResult } from './postgresql-query-details.service';
 import * as hljs from 'highlight.js';
 import * as beautify from 'beautify';
 import * as moment from 'moment';
@@ -20,6 +20,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
   public queryDetails: QueryDetails;
   public tables: Array<Table> = [];
   public views: Array<Table> = [];
+  public procedures: Array<Procedure> = [];
   public queryInfo: { [k: string]: QueryInfo } | null;
   public tableInfo;
   public procedureInfo;
@@ -123,6 +124,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
     this.dbViewNames = '';
     this.tables = [];
     this.views = [];
+    this.procedures = [];
     this.statusTable = this.indexTable = this.createTable = this.createProcedure = this.createView = '';
     this.statusTableError = this.indexTableError = this.createTableError = this.createProcedureError = this.createViewError = '';
     this.queryExample = '';
@@ -221,21 +223,26 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
         }
 
         this.queryInfo = data.Info;
-        this.tables = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBTable);
-        this.views = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBView);
+
+        const tables = [];
+        const views = [];
+        const procedures = [];
 
         // append underlying tables/views
         Object.entries(this.queryInfo).forEach(([key, item]) => {
-          if (this.queryDetails.Query.Tables?.some(t => `${t.Db}.${t.Table}` === key)) {
-            return;
-          }
+          const names = key.split('.');
+          const schema = names.length > 1 ? names[0] : '';
+          const name = names.length > 1 ? names[1] : names[0];
+          item.Type === DBObjectType.TypeDBTable && tables.push({ Db: schema, Table: name });
+          item.Type === DBObjectType.TypeDBView && views.push({ Db: schema, Table: name });
+          item.Type === DBObjectType.TypeDBProcedure && procedures.push({ DB: schema, Name: name })
+        });
 
-          const dbTable = key.split('.');
-          const db = dbTable.length > 1 ? dbTable[0] : this.dbName;
-          const table = dbTable.length > 1 ? dbTable[1] : dbTable[0];
-          item.Type === DBObjectType.TypeDBTable && this.tables.push({ Db: db, Table: table })
-          item.Type === DBObjectType.TypeDBView && this.views.push({ Db: db, Table: table })
-        })
+        this.tables = tables;
+        this.views = views;
+        this.procedures = procedures;
+        this.queryDetails.Query.Procedures = [...procedures];
+        this.queryDetails.Query.Tables = [...tables, ...views];
 
         this.selectTableInfo('', '');
         this.selectProcedureInfo('', '');
@@ -246,22 +253,20 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
       })
   }
 
-  selectTableInfo(dbName: string, tblName: string) {
+  selectTableInfo(schema: string, table: string) {
     if (!this.dbServer || !this.dbServer.Agent) { return; }
 
     this.statusTableError = '';
     this.indexTableError = '';
     this.createTableError = '';
 
-    if (dbName === '' && this.tables?.length > 0) {
-      dbName = this.tables[0].Db;
+    if (!schema && !table && this.tables.length > 0) {
+      schema = this.tables[0].Db;
+      table = this.tables[0].Table;
     }
-    if (tblName === '') {
-      tblName = this.defaultTable();
-    }
-    this.dbTblNames = `\`${dbName}\`.\`${tblName}\``;
+    this.dbTblNames = `\`${schema}\`.\`${table}\``;
 
-    const info = this.queryInfo && (this.queryInfo[`${dbName}.${tblName}`] as QueryInfo);
+    const info = this.queryInfo && (this.queryInfo[`${schema}.${table}`] as QueryInfo);
     if (!info) return;
     this.isTableSchemaGuessed = info.IsSchemaGuessed
     this.tableInfo = info;
@@ -286,21 +291,18 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
     }
   }
 
-  selectProcedureInfo(dbName: string, procedureName: string) {
+  selectProcedureInfo(schema: string, procedure: string) {
     if (!this.dbServer || !this.dbServer.Agent) { return; }
 
     this.createProcedureError = '';
 
-    let [defaultDB, defaultProcedure] = this.defaultProcedure();
-    if (dbName === '') {
-      dbName = defaultDB;
+    if (!schema && !procedure && this.procedures.length > 0) {
+      schema = this.procedures[0].DB;
+      procedure = this.procedures[0].Name;
     }
-    if (procedureName === '') {
-      procedureName = defaultProcedure;
-    }
-    this.dbProcedureNames = `\`${dbName}\`.\`${procedureName}\``;
+    this.dbProcedureNames = `\`${schema}\`.\`${procedure}\``;
 
-    const info = this.queryInfo && (this.queryInfo[`${dbName}.${procedureName}`] as QueryInfo);
+    const info = this.queryInfo && (this.queryInfo[`${schema}.${procedure}`] as QueryInfo);
     if (!info) return;
     this.isProcedureSchemaGuessed = info.IsSchemaGuessed;
     this.procedureInfo = info;
@@ -317,20 +319,18 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
     }
   }
 
-  selectViewInfo(dbName: string, viewName: string) {
+  selectViewInfo(schema: string, view: string) {
     if (!this.dbServer || !this.dbServer.Agent) { return; }
 
     this.createViewError = '';
 
-    if (dbName === '' && this.views?.length > 0) {
-      dbName = this.views[0].Db;
+    if (!schema && !view && this.views.length > 0) {
+      schema = this.views[0].Db;
+      view = this.views[0].Table;
     }
-    if (viewName === '') {
-      viewName = this.defaultView();
-    }
-    this.dbViewNames = `\`${dbName}\`.\`${viewName}\``;
+    this.dbViewNames = `\`${schema}\`.\`${view}\``;
 
-    const info = this.queryInfo && (this.queryInfo[`${dbName}.${viewName}`] as QueryInfo);
+    const info = this.queryInfo && (this.queryInfo[`${schema}.${view}`] as QueryInfo);
     if (!info) return;
     this.isViewSchemaGuessed = info.IsSchemaGuessed;
     this.viewInfo = info;
@@ -350,29 +350,29 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
   addDBTable() {
     if (this.newDBTblNames.length > 6) {
       const part = this.newDBTblNames.split('.');
-      const db = part[0].replace(/`/g, '');
+      const schema = part[0].replace(/`/g, '');
       const tbl = part[1].replace(/`/g, '');
       if (this.queryDetails.Query.Tables === null) {
         this.queryDetails.Query.Tables = [];
       }
-      if (this.queryDetails.Query.Tables.some((t) => t.Db === db && t.Table === tbl)) {
+      if (this.queryDetails.Query.Tables.some((t) => t.Db === schema && t.Table === tbl)) {
         return false
       }
-      this.queryDetails.Query.Tables.push({Db: db, Table: tbl});
+      this.queryDetails.Query.Tables.push({Db: schema, Table: tbl});
       this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
       this.dbTblNames = this.newDBTblNames;
       this.queryDetailsService.getQueryInfo(
         this.dbServer.Agent.UUID,
         this.dbServer.UUID,
         this.dbName,
-        [{ Db: db, Table: tbl }],
+        [{ Db: schema, Table: tbl }],
         [],
         ''
       )
         .then(data => {
           this.appendQueryInfo(data);
-          this.tables = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBTable);
-          this.selectTableInfo(db, tbl);
+          this.tables.push({ Db: schema, Table: tbl });
+          this.selectTableInfo(schema, tbl);
         })
       this.newDBTblNames = '';
     }
@@ -382,15 +382,15 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
   addDBProcedure() {
     if (this.newDBProcedureNames.length > 6) {
       const part = this.newDBProcedureNames.split('.');
-      const db = part[0].replace(/`/g, '');
+      const schema = part[0].replace(/`/g, '');
       const name = part[1].replace(/`/g, '');
       if (this.queryDetails.Query.Procedures === null) {
         this.queryDetails.Query.Procedures = [];
       }
-      if (this.queryDetails.Query.Procedures.some((t) => t.DB === db && t.Name === name)) {
+      if (this.queryDetails.Query.Procedures.some((t) => t.DB === schema && t.Name === name)) {
         return false
       }
-      this.queryDetails.Query.Procedures.push({ DB: db, Name: name });
+      this.queryDetails.Query.Procedures.push({ DB: schema, Name: name });
       this.queryDetailsService.updateProcedures(this.queryDetails.Query.Id, this.queryDetails.Query.Procedures);
       this.dbProcedureNames = this.newDBProcedureNames;
       this.queryDetailsService.getQueryInfo(
@@ -398,12 +398,13 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
         this.dbServer.UUID,
         this.dbName,
         [],
-        [{ DB: db, Name: name }],
+        [{ DB: schema, Name: name }],
         ''
       )
         .then(data => {
           this.appendQueryInfo(data);
-          this.selectProcedureInfo(db, name);
+          this.procedures.push({ DB: schema, Name: name });
+          this.selectProcedureInfo(schema, name);
         })
       this.newDBProcedureNames = '';
     }
@@ -413,29 +414,29 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
   addDBView() {
     if (this.newDBViewNames.length > 6) {
       const part = this.newDBViewNames.split('.');
-      const db = part[0].replace(/`/g, '');
+      const schema = part[0].replace(/`/g, '');
       const name = part[1].replace(/`/g, '');
       if (this.queryDetails.Query.Tables === null) {
         this.queryDetails.Query.Tables = [];
       }
-      if (this.queryDetails.Query.Tables.some((t) => t.Db === db && t.Table === name)) {
+      if (this.queryDetails.Query.Tables.some((t) => t.Db === schema && t.Table === name)) {
         return false
       }
-      this.queryDetails.Query.Tables.push({ Db: db, Table: name });
+      this.queryDetails.Query.Tables.push({ Db: schema, Table: name });
       this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
       this.dbViewNames = this.newDBViewNames;
       this.queryDetailsService.getQueryInfo(
         this.dbServer.Agent.UUID,
         this.dbServer.UUID,
         this.dbName,
-        [{ Db: db, Table: name }],
+        [{ Db: schema, Table: name }],
         [],
         ''
       )
         .then(data => {
           this.appendQueryInfo(data);
-          this.views = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBView);
-          this.selectViewInfo(db, name);
+          this.views.push({ Db: schema, Table: name });
+          this.selectViewInfo(schema, name);
         })
       this.newDBViewNames = '';
     }
@@ -449,50 +450,36 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
   }
 
   removeDBTable(dbTableItem) {
-    const len = this.queryDetails.Query.Tables?.length;
-    for (let i = 0; i < len; i++) {
-      try {
-        if (this.queryDetails.Query.Tables[i].Db === dbTableItem.Db
-          && this.queryDetails.Query.Tables[i].Table === dbTableItem.Table) {
-          this.queryDetails.Query.Tables.splice(i, 1);
-        }
-      } catch (e) {
-        console.error(e);
-      }
+    try {
+      this.queryDetails.Query.Tables = this.queryDetails.Query.Tables.filter((t => t.Db !== dbTableItem.Db || t.Table !== dbTableItem.Table));
+      this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
+      this.tables = this.tables.filter((t => t.Db !== dbTableItem.Db || t.Table !== dbTableItem.Table));
+      delete this.queryInfo[`${dbTableItem.Db}.${dbTableItem.Table}`];
+    } catch (e) {
+      console.error(e);
     }
-    this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
-    this.tables = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBTable);
   }
 
   removeDBProcedure(dbProcedureItem) {
-    const len = this.queryDetails.Query.Procedures?.length;
-    for (let i = 0; i < len; i++) {
-      try {
-        if (this.queryDetails.Query.Procedures[i].DB === dbProcedureItem.DB
-          && this.queryDetails.Query.Procedures[i].Name === dbProcedureItem.Name) {
-          this.queryDetails.Query.Procedures.splice(i, 1);
-        }
-      } catch (e) {
-        console.error(e);
-      }
+    try {
+      this.queryDetails.Query.Procedures = this.queryDetails.Query.Procedures.filter((t => t.DB !== dbProcedureItem.DB || t.Name !== dbProcedureItem.Name));
+      this.queryDetailsService.updateProcedures(this.queryDetails.Query.Id, this.queryDetails.Query.Procedures);
+      this.procedures = this.procedures.filter((t => t.DB !== dbProcedureItem.DB || t.Name !== dbProcedureItem.Name));
+      delete this.queryInfo[`${dbProcedureItem.DB}.${dbProcedureItem.Name}`];
+    } catch (e) {
+      console.error(e);
     }
-    this.queryDetailsService.updateProcedures(this.queryDetails.Query.Id, this.queryDetails.Query.Procedures);
   }
 
   removeDBView(dbTableItem) {
-    const len = this.queryDetails.Query.Tables?.length;
-    for (let i = 0; i < len; i++) {
-      try {
-        if (this.queryDetails.Query.Tables[i].Db === dbTableItem.Db
-          && this.queryDetails.Query.Tables[i].Table === dbTableItem.Table) {
-          this.queryDetails.Query.Tables.splice(i, 1);
-        }
-      } catch (e) {
-        console.error(e);
-      }
+    try {
+      this.queryDetails.Query.Tables = this.queryDetails.Query.Tables.filter((t => t.Db !== dbTableItem.Db || t.Table !== dbTableItem.Table));
+      this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
+      this.views = this.views.filter((t => t.Db !== dbTableItem.Db || t.Table !== dbTableItem.Table));
+      delete this.queryInfo[`${dbTableItem.Db}.${dbTableItem.Table}`];
+    } catch (e) {
+      console.error(e);
     }
-    this.queryDetailsService.updateTables(this.queryDetails.Query.Id, this.queryDetails.Query.Tables);
-    this.views = this.queryDetails.Query.Tables?.filter(t => this.queryInfo[`${t.Db}.${t.Table}`] && this.queryInfo[`${t.Db}.${t.Table}`].Type === DBObjectType.TypeDBView);
   }
 
   isSelectedDbTbl(item): boolean {
@@ -509,32 +496,5 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
 
   private setDefaultDB() {
     if (this.queryDetails.Example.Db) this.dbName = this.queryDetails.Example.Db;
-  }
-
-  private defaultTable(): string {
-    if (this.tables?.length > 0) {
-      return this.tables[0].Table;
-    }
-
-    return '';
-  }
-
-  private defaultProcedure(): [string, string] {
-    if (this.queryDetails.hasOwnProperty('Query')
-      && this.queryDetails.Query.hasOwnProperty('Procedures')
-      && this.queryDetails.Query.Procedures !== null
-      && this.queryDetails.Query.Procedures.length > 0) {
-      return [this.queryDetails.Query.Procedures[0].DB, this.queryDetails.Query.Procedures[0].Name];
-    }
-
-    return ['', ''];
-  }
-
-  private defaultView(): string {
-    if (this.views?.length > 0) {
-      return this.views[0].Table;
-    }
-
-    return '';
   }
 }
