@@ -71,12 +71,12 @@
           <tr *ngIf="showConnect(instance.node)" class="active">
             <td colspan="2">
               <div>
-                <input type="text" [(ngModel)]="mysqlCredentials.username" name="username" class="form-control" placeholder="MySQL username">
+                <input type="text" [(ngModel)]="instCredentials.username" name="username" class="form-control" placeholder="MySQL/PostgreSQL Username">
               </div>
             </td>
             <td>
               <div>
-                <input type="password" [(ngModel)]="mysqlCredentials.password" name="password" class="form-control" placeholder="MySQL Password">
+                <input type="password" [(ngModel)]="instCredentials.password" name="password" class="form-control" placeholder="MySQL/PostgreSQL Password">
               </div>
             </td>
             <td colspan="2">

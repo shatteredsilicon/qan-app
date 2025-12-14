@@ -6,7 +6,7 @@ export class RDSCredentials {
   }
 }
 
-export class MySQLCredentials {
+export class InstanceCredentials {
   constructor(public username = '', public password = '') {
   }
 }
@@ -48,14 +48,14 @@ export class AddAmazonRDSService {
     return response['instances'] as RDSInstance[];
   }
 
-  async enable(rdsCredentials: RDSCredentials, node: RDSNode, mysqlCredentials: MySQLCredentials): Promise<{}> {
+  async enable(rdsCredentials: RDSCredentials, node: RDSNode, credentials: InstanceCredentials): Promise<{}> {
     const url = `/managed/v0/rds`;
     const data = {
       aws_access_key_id: rdsCredentials.aws_access_key_id,
       aws_secret_access_key: rdsCredentials.aws_secret_access_key,
       id: {name: node.name, region: node.region},
-      password: mysqlCredentials.password,
-      username: mysqlCredentials.username
+      password: credentials.password,
+      username: credentials.username
     };
     return await this.httpClient
       .post(url, data, {headers: this.headers})
