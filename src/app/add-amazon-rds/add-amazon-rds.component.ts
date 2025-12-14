@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RDSCredentials, MySQLCredentials, RDSInstance, RDSNode, AddAmazonRDSService } from './add-amazon-rds.service'
+import { RDSCredentials, InstanceCredentials, RDSInstance, RDSNode, AddAmazonRDSService } from './add-amazon-rds.service'
 import { environment } from '../environment';
 
 @Component({
@@ -10,7 +10,7 @@ import { environment } from '../environment';
 export class AddAmazonRDSComponent implements OnInit {
 
   rdsCredentials = new RDSCredentials();
-  mysqlCredentials = new MySQLCredentials();
+  instCredentials = new InstanceCredentials();
   rdsNode = {} as RDSNode;
   allRDSInstances: RDSInstance[] = [];
   registeredRDSInstances: RDSInstance[] = [];
@@ -43,7 +43,7 @@ export class AddAmazonRDSComponent implements OnInit {
   }
 
   enableInstanceMonitoring(node: RDSNode) {
-    this.mysqlCredentials = new MySQLCredentials();
+    this.instCredentials = new InstanceCredentials();
     this.rdsNode = { name: node.name, region: node.region } as RDSNode;
   }
 
@@ -59,7 +59,7 @@ export class AddAmazonRDSComponent implements OnInit {
   async onConnect() {
     this.errorMessage = '';
     try {
-      const res = await this.addAmazonRDSService.enable(this.rdsCredentials, this.rdsNode, this.mysqlCredentials);
+      const res = await this.addAmazonRDSService.enable(this.rdsCredentials, this.rdsNode, this.instCredentials);
     } catch (err) {
       this.errorMessage = err.json().error;
       return;

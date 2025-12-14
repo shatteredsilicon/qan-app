@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
-export type CollectFrom = 'slowlog' | 'rds-slowlog' | 'perfschema';
+export type CollectFrom = 'slowlog' | 'rds-slowlog' | 'perfschema' | 'logfile' | 'rds-logfile' | 'table';
 
 @Injectable()
 export class SettingsService {

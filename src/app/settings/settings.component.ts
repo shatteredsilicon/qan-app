@@ -4,7 +4,7 @@ import {InstanceService} from '../core/instance.service';
 import {CoreComponent} from '../core/core.component';
 import {environment} from '../environment';
 import * as moment from 'moment';
-import {SettingsService} from './settings.service';
+import {CollectFrom, SettingsService} from './settings.service';
 import {interval, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import { RDSService } from '../core/rds.service';
@@ -22,7 +22,7 @@ export class SettingsComponent extends CoreComponent {
   public agentConf: any;
   public oldInterval = '1';
   public interval = '1';
-  public collectFrom: 'perfschema' | 'slowlog' = 'slowlog';
+  public collectFrom: CollectFrom;
   public exampleQueries: boolean;
   public statusUpdatedFromNow$: Observable<string>;
   public logUpdatedFromNow$: Observable<string>;
@@ -89,7 +89,7 @@ export class SettingsComponent extends CoreComponent {
     try {
       this.agentConf = res;
       this.interval = (this.agentConf.qan.Interval / 60).toString();
-      this.collectFrom = this.agentConf.qan.CollectFrom === 'rds-slowlog' ? 'slowlog' : this.agentConf.qan.CollectFrom;
+      this.collectFrom = this.agentConf.qan.CollectFrom?.startsWith('rds-') ? this.agentConf.qan.CollectFrom.slice(4) : this.agentConf.qan.CollectFrom;
       this.exampleQueries = this.agentConf.qan.ExampleQueries;
       this.filterOmit = this.agentConf.qan.FilterOmit ? this.agentConf.qan.FilterOmit.join(',') : '';
     } catch (err) {
@@ -109,7 +109,11 @@ export class SettingsComponent extends CoreComponent {
       this.dbServer.UUID,
       +this.interval,
       this.exampleQueries,
-      this.collectFrom === 'slowlog' && this.isRDS ? 'rds-slowlog' : this.collectFrom,
+      this.collectFrom === 'slowlog' && this.isRDS
+        ? 'rds-slowlog'
+        : this.collectFrom === 'logfile' && this.isRDS
+          ? 'rds-logfile'
+          : this.collectFrom,
       Boolean(this.filterOmit.trim()) ? this.filterOmit.split(',') : []
     );
     const visibleMessageTime = 5000;
