@@ -23,11 +23,10 @@ export interface QueryInfo {
   Status: any
   Index: any
   Errors: Array<string>
-  IsSchemaGuessed: boolean
+  GuessSchema: GuessSchema | null;
 }
 
 export interface QueryInfoResult {
-  GuessDB: GuessDB | null;
   Info: { [k: string]: QueryInfo } | null;
   SkipExplain: boolean;
 }
@@ -70,7 +69,7 @@ export interface QueryExample {
   Explain: { String: string } | string;
 };
 
-export interface GuessDB {
+export interface GuessSchema {
   DB: string;
   IsAmbiguous: boolean;
 }
@@ -154,13 +153,13 @@ export class PostgreSQLQueryDetailsService {
       .then(response => JSON.parse(atob(response['Data'])) as QueryInfoResult);
   }
 
-  getExplain(agentUUID: string, dbServerUUID: string, dbName: string, query: string, withExplain: string) {
+  getExplain(agentUUID: string, dbServerUUID: string, dbName: string, query: string, guessedSchemas: { [k: string]: string }) {
     const url = `/qan-api/agents/${agentUUID}/cmd`;
     const data = {
       UUID: dbServerUUID,
       Db: dbName,
       Query: query,
-      WithExplainRows: withExplain ? JSON.parse(withExplain) as ExplainRow[] : []
+      GuessedSchemas: guessedSchemas
     };
 
     const params = {
