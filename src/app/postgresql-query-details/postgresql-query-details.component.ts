@@ -43,6 +43,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
   public isTableSchemaGuessed: boolean;
   public isViewSchemaGuessed: boolean;
   public isProcedureSchemaGuessed: boolean;
+  public isExplainSchemaGuessed: boolean;
   protected newDBTblNames: string;
   protected newDBProcedureNames: string;
   protected newDBViewNames: string;
@@ -166,6 +167,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
     this.isExplainLoading = true;
     const agentUUID = this.dbServer.Agent.UUID;
     const dbServerUUID = this.dbServer.UUID;
+    this.isExplainSchemaGuessed = false;
     this.textExplainError = '';
     this.jsonExplainError = '';
     const query = this.queryDetails.Example.Query;
@@ -180,9 +182,21 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
       return
     }
 
+    let hasAmbiguousSchema: boolean = false;
+    const guessedSchemas: { [k: string]: string } = {};
+    Object.entries(this.queryInfo).forEach(([key, item]) => {
+      if (item.Type === DBObjectType.TypeDBProcedure) return;
+        const names = key.split('.');
+        const schema = names.length > 1 ? names[0] : '';
+        const name = names.length > 1 ? names[1] : names[0];
+        if (schema && item.GuessSchema) {
+          guessedSchemas[name] = schema;
+          if (item.GuessSchema.IsAmbiguous) hasAmbiguousSchema = true;
+        }
+    });
+
     try {
-      // let data = await this.queryDetailsService.getExplain(agentUUID, dbServerUUID, this.dbName, query);
-      this.dataExplain = await this.queryDetailsService.getExplain(agentUUID, dbServerUUID, this.dbName, query, typeof this.queryDetails.Example.Explain === 'string' ? this.queryDetails.Example.Explain : this.queryDetails.Example.Explain.String);
+      this.dataExplain = await this.queryDetailsService.getExplain(agentUUID, dbServerUUID, this.dbName, query, guessedSchemas);
       if (this.dataExplain.hasOwnProperty('Error') && this.dataExplain['Error'] !== '') {
         const explainError = JSON.parse(this.dataExplain['Error'])
         throw new Error(this.dataExplain['Error']);
@@ -194,6 +208,9 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
         this.jsonExplainString = JSON.stringify(this.jsonExplain);
       } catch (err) {
         this.jsonExplainError = err.message;
+      }
+      if (this.dataExplain.hasOwnProperty('IsSchemaGuessed') && this.dataExplain['IsSchemaGuessed'] && hasAmbiguousSchema) {
+        this.isExplainSchemaGuessed = true;
       }
     } catch (err) {
       this.textExplainError = this.jsonExplainError = 'This type of query is not supported for EXPLAIN';
@@ -218,11 +235,11 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
       this.queryDetails?.Example?.Query || ''
     )
       .then(data => {
+        this.queryInfo = data.Info;
+
         if (this.queryExample && !data.SkipExplain) {
           this.getExplain();
         }
-
-        this.queryInfo = data.Info;
 
         const tables = [];
         const views = [];
@@ -268,7 +285,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
 
     const info = this.queryInfo && (this.queryInfo[`${schema}.${table}`] as QueryInfo);
     if (!info) return;
-    this.isTableSchemaGuessed = info.IsSchemaGuessed
+    this.isTableSchemaGuessed = info.GuessSchema?.IsAmbiguous
     this.tableInfo = info;
     this.statusTable = info.Status;
     this.indexTable = info.Index;
@@ -304,7 +321,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
 
     const info = this.queryInfo && (this.queryInfo[`${schema}.${procedure}`] as QueryInfo);
     if (!info) return;
-    this.isProcedureSchemaGuessed = info.IsSchemaGuessed;
+    this.isProcedureSchemaGuessed = info.GuessSchema?.IsAmbiguous;
     this.procedureInfo = info;
     try {
       this.createProcedure = hljs.highlight('sql', info.Create).value;
@@ -332,7 +349,7 @@ export class PostgreSQLQueryDetailsComponent extends CoreComponent implements On
 
     const info = this.queryInfo && (this.queryInfo[`${schema}.${view}`] as QueryInfo);
     if (!info) return;
-    this.isViewSchemaGuessed = info.IsSchemaGuessed;
+    this.isViewSchemaGuessed = info.GuessSchema?.IsAmbiguous;
     this.viewInfo = info;
     try {
       this.createView = hljs.highlight('sql', beautify.sql(info.Create)).value;

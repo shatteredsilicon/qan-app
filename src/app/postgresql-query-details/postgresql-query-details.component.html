@@ -167,6 +167,7 @@
         <ng-template ngbPanelTitle>
           <div class="accordion-title">
             <h5>TEXT</h5>
+            <p *ngIf="isExplainSchemaGuessed">(table schema is guessed)</p>
           </div>
         </ng-template>
         <ng-template ngbPanelContent>
@@ -186,6 +187,7 @@
         <ng-template ngbPanelTitle>
           <div class="accordion-title">
             <h5>JSON</h5>
+            <p *ngIf="isExplainSchemaGuessed">(table schema is guessed)</p>
           </div>
         </ng-template>
         <ng-template ngbPanelContent>
