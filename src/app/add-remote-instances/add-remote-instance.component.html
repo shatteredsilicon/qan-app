@@ -9,7 +9,7 @@
             </div>
           </div>
           <div class="input-wrapper">
-            <div class="row d-flex align-items-center">
+            <div *ngIf="instance?.name !== 'MongoDB'" class="row d-flex align-items-center">
               <div class="col-9">
                 <input type="text" class="custom-form-input form-control" placeholder="*Hostname"
                        name="Hostname"
@@ -24,12 +24,33 @@
                 </div>
               </div>
             </div>
+            <div *ngIf="instance?.name === 'MongoDB'" class="row d-flex align-items-center">
+              <div class="col-9">
+                <input type="text" class="custom-form-input form-control" placeholder="*URI"
+                       name="Hostname"
+                       [(ngModel)]="remoteInstanceCredentials.address"
+                       #hostname="ngModel"
+                       [class.custom-form-input--not-valid]="hostname?.errors && isSubmitted"
+                       required>
+              </div>
+              <div class="app-tooltip-wrapper">
+                <div class="app-tooltip app-tooltip--remote-instance app-tooltip--mongodb-uri">
+                  <i class="fa fa-info-circle" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="input-wrapper">
             <div class="row d-flex align-items-center">
-              <div class="col-9">
+              <div *ngIf="instance?.name !== 'MongoDB'" class="col-9">
                 <input type="text" class="custom-form-input form-control" placeholder="Name (default: Hostname)"
+                       name="Name"
+                       [(ngModel)]="remoteInstanceCredentials.name"
+                       #name="ngModel">
+              </div>
+              <div *ngIf="instance?.name === 'MongoDB'" class="col-9">
+                <input type="text" class="custom-form-input form-control" placeholder="Name (default: Host(s))"
                        name="Name"
                        [(ngModel)]="remoteInstanceCredentials.name"
                        #name="ngModel">
@@ -42,7 +63,7 @@
             </div>
           </div>
 
-          <div class="input-wrapper">
+          <div *ngIf="instance?.name !== 'MongoDB'" class="input-wrapper">
             <div class="row d-flex align-items-center">
               <div class="col-9">
                 <input type="text" class="custom-form-input form-control" placeholder="Port"
@@ -273,7 +294,7 @@
             </div>
           </div>
 
-          <div *ngIf="instance?.name !== 'SNMP'" class="input-wrapper">
+          <div *ngIf="instance?.name !== 'SNMP' && instance?.name !== 'MongoDB'" class="input-wrapper">
             <div class="row d-flex align-items-center">
               <div class="col-9">
                 <input type="text" class="custom-form-input form-control" placeholder="*Username"
@@ -291,7 +312,7 @@
             </div>
           </div>
 
-          <div *ngIf="instance?.name !== 'SNMP'" class="input-wrapper">
+          <div *ngIf="instance?.name !== 'SNMP' && instance?.name !== 'MongoDB'" class="input-wrapper">
             <div class="row d-flex align-items-center">
               <div class="col-9">
                 <input type="password" class="custom-form-input form-control" placeholder="*Password"

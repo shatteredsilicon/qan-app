@@ -70,6 +70,10 @@
     content: 'Public DNS hostname of your instance';
   }
 
+  div.app-tooltip--mongodb-uri::before {
+    content: 'MongoDB Connection Strings (URI)'
+  }
+
   div.app-tooltip--name::before {
     content: 'Instance name to use';
   }

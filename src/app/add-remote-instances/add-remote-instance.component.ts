@@ -6,7 +6,7 @@ import {Router} from '@angular/router';
 const instanceMap: {
   [key: string]: {
     name: string
-    port: number
+    port?: number
   }
 } = {
   postgresql: {
@@ -20,6 +20,9 @@ const instanceMap: {
   snmp: {
     name: 'SNMP',
     port: 161
+  },
+  mongodb: {
+    name: 'MongoDB'
   }
 }
 
@@ -42,7 +45,7 @@ export class AddRemoteInstanceComponent implements OnInit {
   errorMessage: string;
   isLoading = false;
   isSubmitted = false;
-  instance: { name: string, port: number };
+  instance: { name: string, port?: number };
   currentUrl: string;
 
   private snmpDefaultCommunity: 'public';
@@ -66,11 +69,11 @@ export class AddRemoteInstanceComponent implements OnInit {
     if (!form.valid) { return; }
     this.isLoading = true;
 
-    if (this.remoteInstanceCredentials.name === undefined || this.remoteInstanceCredentials.name === '') {
+    if (this.instance.name !== 'MongoDB' && (this.remoteInstanceCredentials.name === undefined || this.remoteInstanceCredentials.name === '')) {
       this.remoteInstanceCredentials.name = this.remoteInstanceCredentials.address; // set default value for name (like address)
     }
 
-    if (this.remoteInstanceCredentials.port === undefined || this.remoteInstanceCredentials.port === '') {
+    if (this.instance.name !== 'MongoDB' && (this.remoteInstanceCredentials.port === undefined || this.remoteInstanceCredentials.port === '')) {
       this.remoteInstanceCredentials.port = this.instance.port.toString(); // set default value for port
     }
 
