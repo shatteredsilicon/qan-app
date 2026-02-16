@@ -36,7 +36,8 @@ export interface NodeInstance {
 const urlInstanceMap = {
   '/add-remote-mysql': 'mysql',
   '/add-remote-postgres': 'postgresql',
-  '/add-remote-snmp': 'snmp'
+  '/add-remote-snmp': 'snmp',
+  '/add-remote-mongodb': 'mongodb'
 }
 
 @Injectable()
