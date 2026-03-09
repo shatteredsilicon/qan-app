@@ -117,4 +117,40 @@ export class SummaryService {
                 return str.slice(1, -1);
             });
     }
+
+    getToolkit(agentUUID: string, dbServerUUID: string) {
+        const url = `/qan-api/agents/${agentUUID}/cmd`;
+        const data = {
+            UUID: dbServerUUID
+        };
+
+        const params = {
+            AgentUUID: agentUUID,
+            Service: 'query',
+            Cmd: 'ToolkitSummary',
+            Data: btoa(JSON.stringify(data))
+        };
+
+        return this.httpClient
+            .put(url, params, { headers: this.headers })
+            .toPromise()
+            .then(resp => {
+                // if not error - continue
+                if (!resp['Error']) {
+                    return resp;
+                }
+                let err = resp['Error'];
+                if (resp['Error'] === 'Unknown command: ToolkitSummary') {
+                    err = ' - Please update your `ssm-client`.';
+                    err += ' (Output: ' +  resp['Error'] + ')';
+                }
+                throw new Error(err);
+            })
+            .then(resp => {
+                let str = window.atob(resp['Data']);
+                str = str.replace(/\\n/g, '\n');
+                str = str.replace(/\\t/g, '\t');
+                return str.slice(1, -1);
+            });
+    }
 }

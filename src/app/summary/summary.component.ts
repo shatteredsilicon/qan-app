@@ -23,14 +23,17 @@ export class SummaryComponent extends CoreComponent {
 
     public serverSummary: string;
     public mysqlSummary: string;
+    public toolkitSummary: string;
     public mongoSummary: string;
 
     public serverSummaryError: string;
     public mysqlSummaryError: string;
+    public toolkitSummaryError: string;
     public mongoSummaryError: string;
 
     public serverSummaryLoader: boolean;
     public mysqlSummaryLoader: boolean;
+    public toolkitSummaryLoader: boolean;
     public mongoSummaryLoader: boolean;
 
     constructor(protected route: ActivatedRoute, protected router: Router,
@@ -60,6 +63,11 @@ export class SummaryComponent extends CoreComponent {
             .then(data => this.mysqlSummary = data)
             .catch(err => this.mysqlSummaryError = err.message)
             .then(() => this.mysqlSummaryLoader = false);
+        this.summaryService
+            .getToolkit(agentUUID, this.dbServer.UUID)
+            .then(data => this.toolkitSummary = data)
+            .catch(err => this.toolkitSummaryError = err.message)
+            .then(() => this.toolkitSummaryLoader = false);
     }
 
      /**
@@ -101,12 +109,15 @@ export class SummaryComponent extends CoreComponent {
     onChangeParams(params) {
         // to initalise loader when host was changed
         this.mysqlSummary = '',
+        this.toolkitSummary = '',
         this.mongoSummary = '',
         this.serverSummary = '',
         this.mysqlSummaryError = '',
+        this.toolkitSummaryError = '',
         this.mongoSummaryError = '',
         this.serverSummaryError = '';
         this.mysqlSummaryLoader = true,
+        this.toolkitSummaryLoader = true,
         this.mongoSummaryLoader = true,
         this.serverSummaryLoader = true;
 
