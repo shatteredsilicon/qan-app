@@ -39,8 +39,8 @@
                   </div>
                 </ng-template>
                 <ng-template ngbPanelContent>
-                    <pre *ngIf="!mysqlSummaryLoader && mysqlSummary" style="margin: 1rem">{{ mysqlSummary }}</pre>
-                    <i *ngIf="mysqlSummaryLoader" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+                    <pre *ngIf="!mysqlSummaryLoader && !toolkitSummaryLoader && mysqlSummary" style="margin: 1rem">{{ mysqlSummary }}<br/><br/><br/>{{ toolkitSummary }}</pre>
+                    <i *ngIf="mysqlSummaryLoader || toolkitSummaryLoader" class="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
                     <div *ngIf="!mysqlSummaryLoader && mysqlSummaryError" class="alert alert-warning w-75 mx-auto m-2" role="alert">
                         <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
                         {{ mysqlSummaryError }}
