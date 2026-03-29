@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { MomentFormatPipe } from './moment-format.pipe';
-import * as moment from 'moment';
+import moment from 'moment';
 
 type TimeEdge = 'from' | 'to';
 

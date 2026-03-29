@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RDSCredentials, InstanceCredentials, RDSInstance, RDSNode, AddAmazonRDSService } from './add-amazon-rds.service'
-import { environment } from '../environment';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-add-aws',
   templateUrl: './add-amazon-rds.component.html',
-  styleUrls: ['./add-amazon-rds.component.scss']
+  styleUrls: ['./add-amazon-rds.component.scss'],
+  imports: [FormsModule, NgIf, NgFor, NgClass, FormsModule]
 })
 export class AddAmazonRDSComponent implements OnInit {
 

@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {AddRemoteInstanceService, RemoteInstanceCredentials} from './add-remote-instance.service'
-import {environment} from '../environment';
 import {Router} from '@angular/router';
+import { NgFor, NgIf } from '@angular/common';
 
 const instanceMap: {
   [key: string]: {
@@ -29,7 +30,8 @@ const instanceMap: {
 @Component({
   selector: 'app-add-remote-postgres',
   templateUrl: './add-remote-instance.component.html',
-  styleUrls: ['./add-remote-instance.component.scss']
+  styleUrls: ['./add-remote-instance.component.scss'],
+  imports: [FormsModule, NgIf, NgFor]
 })
 export class AddRemoteInstanceComponent implements OnInit {
 

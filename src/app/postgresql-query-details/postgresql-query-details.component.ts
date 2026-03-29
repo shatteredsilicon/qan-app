@@ -5,14 +5,20 @@ import { CoreComponent, QueryParams } from '../core/core.component';
 import { PostgreSQLQueryDetailsService, QueryDetails, Table, Procedure, DBObjectType, QueryInfo, QueryInfoResult } from './postgresql-query-details.service';
 import * as hljs from 'highlight.js';
 import * as beautify from 'beautify';
-import * as moment from 'moment';
-import { MomentFormatPipe } from '../shared/moment-format.pipe';
+import moment from 'moment';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { HumanizePipe } from '../shared/humanize.pipe';
+import { FormsModule } from '@angular/forms';
+import { MapToIterablePipe } from '../shared/map-to-iterable.pipe';
+import { JSONTreeComponent } from '../core/json-tree/json-tree.component';
+import { ClipboardModule } from 'ngx-clipboard';
 
 @Component({
-  moduleId: module.id,
   selector: 'app-query-details',
   templateUrl: './postgresql-query-details.component.html',
   styleUrls: ['./postgresql-query-details.component.scss'],
+  imports: [NgbModule, NgIf, NgFor, NgClass, HumanizePipe, FormsModule, MapToIterablePipe, JSONTreeComponent, ClipboardModule]
 })
 export class PostgreSQLQueryDetailsComponent extends CoreComponent implements OnInit {
 

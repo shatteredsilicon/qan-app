@@ -1,15 +1,19 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, RouterOutlet } from '@angular/router';
 
 import { InstanceService } from './core/instance.service';
 import { environment } from './environment';
-import * as moment from 'moment';
+import moment from 'moment';
 import {DOCUMENT} from '@angular/common';
 import { ServerService } from './core/server.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterModule, RouterOutlet]
 })
 export class AppComponent implements OnInit {
   title = 'Query Analytics';

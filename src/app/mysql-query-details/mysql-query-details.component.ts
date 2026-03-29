@@ -5,14 +5,21 @@ import { CoreComponent, QueryParams } from '../core/core.component';
 import { MySQLQueryDetailsService, QueryDetails, UserSource, Table, DBObjectType, QueryInfo, QueryInfoResult } from './mysql-query-details.service';
 import * as hljs from 'highlight.js';
 import * as beautify from 'beautify';
-import * as moment from 'moment';
+import moment from 'moment';
 import { MomentFormatPipe } from '../shared/moment-format.pipe';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { HumanizePipe } from '../shared/humanize.pipe';
+import { MapToIterablePipe } from '../shared/map-to-iterable.pipe';
+import { JSONTreeComponent } from '../core/json-tree/json-tree.component';
+import { ClipboardModule } from 'ngx-clipboard';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  moduleId: module.id,
   selector: 'app-query-details',
   templateUrl: './mysql-query-details.component.html',
   styleUrls: ['./mysql-query-details.component.scss'],
+  imports: [NgbModule, FormsModule, NgIf, NgFor, NgClass, HumanizePipe, MapToIterablePipe, JSONTreeComponent, ClipboardModule, DatePipe]
 })
 export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit {
 

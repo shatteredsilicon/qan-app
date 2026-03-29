@@ -38,7 +38,7 @@
         <input class="form-control" [(ngModel)]="searchValue" name="searchValue"
                type="text" placeholder="Search by query abstract, fingerprint or ID"
                [disabled]="!isQuerySwitching && !isLoading && totalAmountOfQueries === 0 && !isSearchQuery" id="search-input">
-        <button class="search-button" (submit)="search()" type="submit">
+        <button class="search-button" (submit)="search($event)" type="submit">
           <i class="fa fa-search"></i>
         </button>
       </form>

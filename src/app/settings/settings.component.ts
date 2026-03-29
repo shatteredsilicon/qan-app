@@ -2,22 +2,25 @@ import {Component} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {InstanceService} from '../core/instance.service';
 import {CoreComponent} from '../core/core.component';
-import {environment} from '../environment';
-import * as moment from 'moment';
+import moment from 'moment';
 import {CollectFrom, SettingsService} from './settings.service';
 import {interval, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import { RDSService } from '../core/rds.service';
+import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
+import { HumanizePipe } from '../shared/humanize.pipe';
+import { MapToIterablePipe } from '../shared/map-to-iterable.pipe';
 
 @Component({
-  moduleId: module.id,
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  providers: [SettingsService],
+  imports: [NgbModule, NgIf, NgFor, FormsModule, AsyncPipe, HumanizePipe, MapToIterablePipe, NgClass]
 })
 export class SettingsComponent extends CoreComponent {
-  public agentStatus: {};
+  public agentStatus: Promise<{}>;
   public qanConf: {};
   public agentConf: any;
   public oldInterval = '1';
@@ -26,7 +29,7 @@ export class SettingsComponent extends CoreComponent {
   public exampleQueries: boolean;
   public statusUpdatedFromNow$: Observable<string>;
   public logUpdatedFromNow$: Observable<string>;
-  public agentLog: {};
+  public agentLog: Promise<{}>;
   public severityLeveles: Array<string> = [
     'emerg', 'alert', 'crit', 'err',
     'warning', 'notice', 'info', 'debug'
@@ -140,16 +143,16 @@ export class SettingsComponent extends CoreComponent {
   /**
    * Get slice of exported variables of agent.
    */
-  getAgentStatus() {
+  public getAgentStatus() {
     this.agentStatus = this.settingsService.getAgentStatus(this.dbServer.Agent.UUID);
     const updated: any = moment();
-    this.statusUpdatedFromNow$ = interval(60000).pipe(map(n => updated.fromNow()));
+    this.statusUpdatedFromNow$ = interval(60000).pipe<string>(map(n => updated.fromNow()));
   }
 
   /**
    * get agent log for some period.
    */
-  getAgentLog() {
+  public getAgentLog() {
     const begin = moment.utc().subtract(this.logPeriod, 'h').format('YYYY-MM-DDTHH:mm:ss');
     const end = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
     this.agentLog = this.settingsService.getAgentLog(this.dbServer.Agent.UUID, begin, end);

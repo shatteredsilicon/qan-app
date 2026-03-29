@@ -1,21 +1,12 @@
 {
-  "compilerOptions": {
+  "angularCompilerOptions": {
+    "strict": false,
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": [
-      "es2016",
-      "dom"
-    ],
+    "noImplicitAny": false,
     "outDir": "../out-tsc/app",
-    "target": "es5",
-    "module": "es2015",
-    "baseUrl": "",
-    "types": [
-      "node"
-    ],
     "typeRoots": [
       "../node_modules/@types"
     ]

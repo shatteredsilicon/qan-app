@@ -10,25 +10,23 @@ export class SettingsService {
 
     constructor(private httpClient: HttpClient) { }
 
-    public async getAgentStatus(agentUUID: string): Promise<{}> {
+    public getAgentStatus(agentUUID: string): Promise<{}> {
         const url = `/qan-api/agents/${agentUUID}/status`;
 
-        const response = await this.httpClient
+        return this.httpClient
             .get(url, { headers: this.headers })
             .toPromise();
-        return response as {};
     }
 
-    public async getAgentLog(agentUUID, begin, end: string): Promise<{}> {
+    public getAgentLog(agentUUID, begin, end: string): Promise<{}> {
         const url = `/qan-api/agents/${agentUUID}/log`;
 
         const params = new HttpParams()
           .set('begin', begin)
           .set('end', end);
-        const response = await this.httpClient
+        return this.httpClient
             .get(url, { headers: this.headers, params: params })
             .toPromise();
-        return response as {};
     }
 
     public async getAgentDefaults(agentUUID: string, dbServerUUID: string): Promise<{}> {

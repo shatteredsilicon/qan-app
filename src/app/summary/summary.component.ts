@@ -1,23 +1,25 @@
-import { Component } from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { NgIf } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { CoreComponent } from '../core/core.component';
 import { SummaryService } from './summary.service';
-import { Instance, InstanceService } from '../core/instance.service';
-import * as JSZip from 'jszip';
+import { InstanceService } from '../core/instance.service';
+import JSZip from 'jszip';
 import saveAs from 'jszip/vendor/FileSaver';
-import * as moment from 'moment';
+import moment from 'moment';
 import { MomentFormatPipe } from '../shared/moment-format.pipe';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 /**
  * Shows MySQL and Server Summary
  */
 @Component({
-  moduleId: module.id,
   selector: 'app-summary',
   templateUrl: './summary.component.html',
-  styleUrls: ['./summary.component.scss']
+  styleUrls: ['./summary.component.scss'],
+  imports: [NgbModule, NgIf]
 })
 export class SummaryComponent extends CoreComponent {
 
@@ -50,7 +52,9 @@ export class SummaryComponent extends CoreComponent {
             .getServer(agentUUID, this.dbServer.ParentUUID)
             .then(data => this.serverSummary = data)
             .catch(err => this.serverSummaryError = err.message)
-            .then(() => this.serverSummaryLoader = false);
+            .then(() => {
+              this.serverSummaryLoader = false;
+            });
     }
 
     /**
@@ -79,13 +83,16 @@ export class SummaryComponent extends CoreComponent {
             .getMongo(agentUUID, this.dbServer.UUID)
             .then(data => this.mongoSummary = data)
             .catch(err => this.mongoSummaryError = err.message)
-            .then(() => this.mongoSummaryLoader = false);
+            .then(() => {
+              this.mongoSummaryLoader = false;
+            });
     }
 
     downloadSummary() {
         const momentFormatPipe = new MomentFormatPipe();
         const date = momentFormatPipe.transform(moment.utc(), 'YYYY-MM-DDTHH:mm:ss');
         const filename = `ssm-${this.dbServer.Name}-${date}-summary.zip`;
+        // @ts-ignore
         const zip = new JSZip();
         zip.file('system_summary.txt', this.serverSummary);
         if (this.dbServer.Subsystem === 'mongo') {

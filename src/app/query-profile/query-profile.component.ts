@@ -2,16 +2,22 @@ import { CoreComponent, QueryParams, QanError } from '../core/core.component';
 import { Component } from '@angular/core';
 import { InstanceService, Instance } from '../core/instance.service';
 import { QueryProfileService, QanMessage } from './query-profile.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import * as moment from 'moment';
+import { Router, ActivatedRoute, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import moment from 'moment';
 import { MomentFormatPipe } from '../shared/moment-format.pipe';
+import { NgFor, NgIf } from '@angular/common';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HumanizePipe } from '../shared/humanize.pipe';
+import { LoadSparklinesDirective } from '../shared/load-sparklines.directive';
+import { FormsModule } from '@angular/forms';
 
 const queryProfileError = 'No data. Please check ssm-client and database configurations on selected instance.';
 
 @Component({
-    moduleId: module.id,
+    selector: 'app-profile',
     templateUrl: 'query-profile.component.html',
     styleUrls: ['./query-profile.component.scss'],
+    imports: [NgbModule, NgIf, NgFor, HumanizePipe, FormsModule, LoadSparklinesDirective, RouterModule, RouterLink, RouterLinkActive]
 })
 export class QueryProfileComponent extends CoreComponent {
 
@@ -136,7 +142,7 @@ export class QueryProfileComponent extends CoreComponent {
         return queryParams;
     }
 
-    search() {
+    search($event: any) {
         this.isSearchQuery = true;
         const params: QueryParams = Object.assign({}, this.queryParams);
         if (!!this.searchValue) {

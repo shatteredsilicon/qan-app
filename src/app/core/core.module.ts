@@ -4,14 +4,11 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { ErrorHandler } from '@angular/core';
 
 import { SharedModule } from '../shared/shared.module';
 import { JSONTreeComponent } from './json-tree/json-tree.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-// import { QanErrorHandler } from './qan-error.handler';
 import { InstanceService } from './instance.service';
-import { CoreComponent } from './core.component';
 
 import { QueryProfileComponent } from '../query-profile/query-profile.component';
 import { QueryProfileService } from '../query-profile/query-profile.service';
@@ -29,16 +26,12 @@ import { AddAmazonRDSService } from '../add-amazon-rds/add-amazon-rds.service';
 import { AddRemoteInstanceService } from '../add-remote-instances/add-remote-instance.service';
 import { RemoteInstancesListService } from '../remote-instances-list/remote-instances-list.service';
 import { ClipboardModule } from 'ngx-clipboard';
-import {RemoteInstancesListComponent} from '../remote-instances-list/remote-instances-list.component';
+import { RemoteInstancesListComponent } from '../remote-instances-list/remote-instances-list.component';
 
 @NgModule({
-    imports: [CommonModule, SharedModule, ClipboardModule],
-    declarations: [PageNotFoundComponent, QueryProfileComponent,
-        MySQLQueryDetailsComponent, MongoQueryDetailsComponent, PostgreSQLQueryDetailsComponent,
-        SummaryComponent, SettingsComponent, JSONTreeComponent, RemoteInstancesListComponent],
-    exports: [PageNotFoundComponent, QueryProfileComponent,
-        MySQLQueryDetailsComponent, MongoQueryDetailsComponent, PostgreSQLQueryDetailsComponent,
-        SummaryComponent, SettingsComponent, JSONTreeComponent],
+    imports: [CommonModule, SharedModule, ClipboardModule, SummaryComponent, SettingsComponent,
+        JSONTreeComponent, PostgreSQLQueryDetailsComponent, MongoQueryDetailsComponent, MySQLQueryDetailsComponent,
+        QueryProfileComponent, PageNotFoundComponent, RemoteInstancesListComponent],
     providers: [InstanceService, QueryProfileService, MySQLQueryDetailsService,
         MongoQueryDetailsService, PostgreSQLQueryDetailsService, SummaryService, SettingsService,
       AddAmazonRDSService, AddRemoteInstanceService, RemoteInstancesListService]

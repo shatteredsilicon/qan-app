@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import * as moment from 'moment';
-import * as numeral from 'numeral';
+import moment from 'moment';
+import numeral from 'numeral';
 
 /**
    * @desc humanize time duration

@@ -55,10 +55,10 @@ export class LatencyChartDirective {
       avg = `${this.metricPrefix}_avg` in data ? data[`${this.metricPrefix}_avg`] : 0;
       p95 = `${this.metricPrefix}_p95` in data ? data[`${this.metricPrefix}_p95`] : 0;
     } else {
-      min = 'Min' in data ? data['Min'] : 0;
-      max = 'Max' in data ? data['Max'] : 0;
-      avg = 'Avg' in data ? data['Avg'] : 0;
-      p95 = 'P95' in data ? data['P95'] : 0;
+      min = 'Min' in data ? data['Min'] as number : 0;
+      max = 'Max' in data ? data['Max'] as number : 0;
+      avg = 'Avg' in data ? data['Avg'] as number : 0;
+      p95 = 'P95' in data ? data['P95'] as number : 0;
     }
 
     const humanize = new HumanizePipe();
