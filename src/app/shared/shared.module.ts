@@ -15,9 +15,7 @@ import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   imports: [
-    CommonModule
-  ],
-  declarations: [
+    CommonModule,
     HumanizePipe,
     LatencyChartDirective,
     LoadSparklinesDirective,

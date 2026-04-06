@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER, provideZonelessChangeDetection, provideZoneChangeDetection } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -27,22 +27,21 @@ export function getServer(serverService: ServerService) {
 }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    AddAmazonRDSComponent,
-    AddRemoteInstanceComponent,
-    AddInstanceComponent,
-  ],
   imports: [
     AppRoutingModule,
     BrowserModule,
     CoreModule,
     FormsModule,
     HttpClientModule,
-    NgbModule.forRoot(),
+    NgbModule,
     SharedModule,
+    AppComponent,
+    AddAmazonRDSComponent,
+    AddRemoteInstanceComponent,
+    AddInstanceComponent,
   ],
   providers: [
+    provideZoneChangeDetection(),
     InstanceService,
     {
       provide: APP_INITIALIZER,
@@ -63,7 +62,7 @@ export function getServer(serverService: ServerService) {
       useFactory: getServer,
       deps: [ServerService],
       multi: true
-    }
+    },
   ],
   bootstrap: [AppComponent]
 })

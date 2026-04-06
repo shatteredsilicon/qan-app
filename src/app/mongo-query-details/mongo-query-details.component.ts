@@ -5,13 +5,19 @@ import { CoreComponent, QueryParams } from '../core/core.component';
 import { MongoQueryDetailsService, QueryDetails } from './mongo-query-details.service';
 import * as hljs from 'highlight.js';
 import * as beautify from 'beautify';
-import * as moment from 'moment';
+import moment from 'moment';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgIf } from '@angular/common';
+import { HumanizePipe } from '../shared/humanize.pipe';
+import { JSONTreeComponent } from '../core/json-tree/json-tree.component';
+import { ClipboardModule } from 'ngx-clipboard';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  moduleId: module.id,
   selector: 'app-query-details',
   templateUrl: './mongo-query-details.component.html',
-  styleUrls: ['./mongo-query-details.component.scss']
+  styleUrls: ['./mongo-query-details.component.scss'],
+  imports: [NgbModule, NgIf, HumanizePipe, JSONTreeComponent, ClipboardModule, FormsModule]
 })
 export class MongoQueryDetailsComponent extends CoreComponent implements OnInit {
 

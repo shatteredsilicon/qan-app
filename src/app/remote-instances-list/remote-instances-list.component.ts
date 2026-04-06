@@ -1,13 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {RemoteInstancesListService, ClientRegion} from './remote-instances-list.service';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
+import {RemoteInstancesListService} from './remote-instances-list.service';
 import {NodeInstance, NodeInstanceService} from '../add-remote-instances/add-remote-instance.service';
-import {environment} from '../environment';
 import {AddAmazonRDSService} from '../add-amazon-rds/add-amazon-rds.service';
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-remote-instances-list',
   templateUrl: './remote-instances-list.component.html',
-  styleUrls: ['./remote-instances-list.component.scss']
+  styleUrls: ['./remote-instances-list.component.scss'],
+  imports: [CommonModule, NgFor, NgIf, NgbCollapseModule]
 })
 export class RemoteInstancesListComponent implements OnInit {
   public allInstances: NodeInstance[] = [];

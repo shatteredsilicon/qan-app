@@ -1,7 +1,7 @@
 import {OnDestroy, Component} from '@angular/core';
 import {ParseQueryParamDatePipe} from '../shared/parse-query-param-date.pipe';
 import {Event, Router, ActivatedRoute, NavigationEnd} from '@angular/router';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import {environment} from '../environment';
 import {Subscription} from 'rxjs';

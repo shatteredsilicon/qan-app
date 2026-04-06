@@ -1,11 +1,11 @@
 import { Directive, Input, HostBinding } from '@angular/core';
 import { ElementRef } from '@angular/core';
 
-import * as moment from 'moment';
+import moment from 'moment';
 import { select } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
-import { isoParse, utcFormat, extent, line, area, bisector } from 'd3';
-import { event as currentEvent, mouse } from 'd3-selection';
+import { isoParse, extent, line, area, bisector } from 'd3';
+import { pointer } from 'd3-selection';
 
 import { HumanizePipe } from './humanize.pipe';
 import { MomentFormatPipe } from './moment-format.pipe';
@@ -133,8 +133,8 @@ export class LoadSparklinesDirective {
             .on('mouseover', () => focus.style('display', null))
             .on('mouseout', () => focus.style('display', 'none'));
 
-        rect.on('mousemove', (p, e) => {
-            const coords = mouse(currentEvent.currentTarget);
+        rect.on('mousemove', (event) => {
+            const coords = pointer(event);
 
             const mouseDate: any = moment.utc(xScale.invert(coords[0]));
             // returns the index to the current data item
