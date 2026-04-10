@@ -54,7 +54,9 @@
   },
   "resolutions": {
     "esbuild": "npm:esbuild-wasm@latest",
-    "vite": "npm:vite@^7.3.2"
+    "vite": "npm:vite@^7.3.2",
+    "hono": "npm:hono@^4.12.12",
+    "@hono/node-server": "npm:@hono/node-server@^1.19.13"
   },
   "devDependencies": {
     "@angular/build": "^21.2.6",
