@@ -13,12 +13,14 @@ import { FormsModule } from '@angular/forms';
 import { MapToIterablePipe } from '../shared/map-to-iterable.pipe';
 import { JSONTreeComponent } from '../core/json-tree/json-tree.component';
 import { ClipboardModule } from 'ngx-clipboard';
+import { LatencyChartDirective } from '../shared/latency-chart.directive';
+import { LoadSparklinesDirective } from '../shared/load-sparklines.directive';
 
 @Component({
   selector: 'app-query-details',
   templateUrl: './postgresql-query-details.component.html',
   styleUrls: ['./postgresql-query-details.component.scss'],
-  imports: [NgbModule, NgIf, NgFor, NgClass, HumanizePipe, FormsModule, MapToIterablePipe, JSONTreeComponent, ClipboardModule]
+  imports: [NgbModule, NgIf, NgFor, NgClass, HumanizePipe, FormsModule, MapToIterablePipe, JSONTreeComponent, ClipboardModule, LatencyChartDirective, LoadSparklinesDirective]
 })
 export class PostgreSQLQueryDetailsComponent extends CoreComponent implements OnInit {
 

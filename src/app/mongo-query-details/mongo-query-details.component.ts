@@ -12,12 +12,14 @@ import { HumanizePipe } from '../shared/humanize.pipe';
 import { JSONTreeComponent } from '../core/json-tree/json-tree.component';
 import { ClipboardModule } from 'ngx-clipboard';
 import { FormsModule } from '@angular/forms';
+import { LatencyChartDirective } from '../shared/latency-chart.directive';
+import { LoadSparklinesDirective } from '../shared/load-sparklines.directive';
 
 @Component({
   selector: 'app-query-details',
   templateUrl: './mongo-query-details.component.html',
   styleUrls: ['./mongo-query-details.component.scss'],
-  imports: [NgbModule, NgIf, HumanizePipe, JSONTreeComponent, ClipboardModule, FormsModule]
+  imports: [NgbModule, NgIf, HumanizePipe, JSONTreeComponent, ClipboardModule, FormsModule, LatencyChartDirective, LoadSparklinesDirective]
 })
 export class MongoQueryDetailsComponent extends CoreComponent implements OnInit {
 
