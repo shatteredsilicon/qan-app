@@ -10,6 +10,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HumanizePipe } from '../shared/humanize.pipe';
 import { LoadSparklinesDirective } from '../shared/load-sparklines.directive';
 import { FormsModule } from '@angular/forms';
+import { LatencyChartDirective } from '../shared/latency-chart.directive';
 
 const queryProfileError = 'No data. Please check ssm-client and database configurations on selected instance.';
 
@@ -17,7 +18,7 @@ const queryProfileError = 'No data. Please check ssm-client and database configu
     selector: 'app-profile',
     templateUrl: 'query-profile.component.html',
     styleUrls: ['./query-profile.component.scss'],
-    imports: [NgbModule, NgIf, NgFor, HumanizePipe, FormsModule, LoadSparklinesDirective, RouterModule, RouterLink, RouterLinkActive]
+    imports: [NgbModule, NgIf, NgFor, HumanizePipe, FormsModule, LoadSparklinesDirective, RouterModule, RouterLink, RouterLinkActive, LatencyChartDirective]
 })
 export class QueryProfileComponent extends CoreComponent {
 

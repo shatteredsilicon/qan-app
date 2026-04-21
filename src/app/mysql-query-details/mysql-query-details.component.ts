@@ -14,12 +14,14 @@ import { MapToIterablePipe } from '../shared/map-to-iterable.pipe';
 import { JSONTreeComponent } from '../core/json-tree/json-tree.component';
 import { ClipboardModule } from 'ngx-clipboard';
 import { FormsModule } from '@angular/forms';
+import { LatencyChartDirective } from '../shared/latency-chart.directive';
+import { LoadSparklinesDirective } from '../shared/load-sparklines.directive';
 
 @Component({
   selector: 'app-query-details',
   templateUrl: './mysql-query-details.component.html',
   styleUrls: ['./mysql-query-details.component.scss'],
-  imports: [NgbModule, FormsModule, NgIf, NgFor, NgClass, HumanizePipe, MapToIterablePipe, JSONTreeComponent, ClipboardModule, DatePipe]
+  imports: [NgbModule, FormsModule, NgIf, NgFor, NgClass, HumanizePipe, MapToIterablePipe, JSONTreeComponent, ClipboardModule, DatePipe, LatencyChartDirective, LoadSparklinesDirective]
 })
 export class MySQLQueryDetailsComponent extends CoreComponent implements OnInit {
 
