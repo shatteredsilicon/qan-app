@@ -57,7 +57,8 @@
     "hono": "npm:hono@^4.12.16",
     "postcss": "npm:postcss@^8.5.10",
     "@hono/node-server": "npm:@hono/node-server@^1.19.13",
-    "ip-address": "npm:ip-address@~10.1.1"
+    "ip-address": "npm:ip-address@~10.1.1",
+    "fast-uri": "npm:fast-uri@~3.1.2"
   },
   "devDependencies": {
     "@angular/build": "^21.2.6",
