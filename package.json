@@ -22,7 +22,7 @@
     "beautify": "https://github.com/shatteredsilicon/Beautify",
     "body-parser": "2.2.2",
     "bootstrap": "^4.6.2",
-    "brace-expansion": "5.0.5",
+    "brace-expansion": "~5.0.6",
     "braces": "3.0.3",
     "core-js": "^3.49.0",
     "d3": "~7.9.0",
@@ -48,7 +48,7 @@
     "stream": "0.0.3",
     "tar": "7.5.13",
     "tslib": "^2.8.1",
-    "ws": "8.20.0",
+    "ws": "~8.20.1",
     "zone.js": "^0.16.1"
   },
   "resolutions": {
@@ -58,7 +58,9 @@
     "postcss": "npm:postcss@^8.5.10",
     "@hono/node-server": "npm:@hono/node-server@^1.19.13",
     "ip-address": "npm:ip-address@~10.1.1",
-    "fast-uri": "npm:fast-uri@~3.1.2"
+    "fast-uri": "npm:fast-uri@~3.1.2",
+    "brace-expansion": "npm:brace-expansion@~5.0.6",
+    "ws": "npm:ws@~8.20.1"
   },
   "devDependencies": {
     "@angular/build": "^21.2.6",
