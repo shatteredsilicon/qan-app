@@ -40,10 +40,10 @@ export class RemoteInstancesListService {
       .toPromise();
   }
 
-  async putHealthAlerts(node: NodeInstance, enabled: boolean): Promise<{}> {
+  async putHealthAlerts(node: NodeInstance, enabled: boolean, category?: string): Promise<{}> {
     const url = `/managed/v0/nodes/${node.name}/health-alerts`;
     return await this.http
-      .put(url, { enabled: enabled }, {headers: this.headers})
+      .put(url, { enabled: enabled, category: category }, {headers: this.headers})
       .toPromise();
   }
 }

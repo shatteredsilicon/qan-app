@@ -30,7 +30,7 @@ export interface NodeInstance {
   name: string;
   services: NodeInstanceService[];
   collapsed: boolean;
-  health_alerts_state: number;
+  health_alerts_status: { [key: string]: number };
 }
 
 const urlInstanceMap = {
