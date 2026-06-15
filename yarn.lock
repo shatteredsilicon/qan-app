@@ -274,10 +274,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@^21.2.6":
-  version "21.2.6"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-21.2.6.tgz#94ad32c803a7f7c1d5ea41aa38c0b75de6e4e034"
-  integrity sha512-svgK5DhFlQlS+sMybXftn08rHHRiDGY/uIKT5LZUaKgyffnkPb8uClpMIW0NzANtU8qs8pwgDZFoJw85Ia3oqQ==
+"@angular/core@^21.2.17":
+  version "21.2.17"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-21.2.17.tgz#cbed1509afd41422ef09539be0fb5cf5755e2b18"
+  integrity sha512-wYHpwIdnUnjQFOJJNqRcGx7LS3u64jT+R9L0TnMR/ViBM9dQgGYImlSikkftg2yrFCNo5aKRxhG2LLskQurVdg==
   dependencies:
     tslib "^2.3.0"
 
@@ -2457,9 +2457,9 @@ es-object-atoms@^1.0.0, es-object-atoms@^1.1.1:
     es-errors "^1.3.0"
 
 esbuild@0.27.3, esbuild@^0.27.0, "esbuild@npm:esbuild-wasm@latest":
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.28.0.tgz#e2e60b86ed19e0f6f5a1e6c1c722f5a811d7d5f7"
-  integrity sha512-5TRVKExcEmeMkccIZMzUq+Az6X2RoMAJyfl6SMMO1dMVhmvt0I2mx7gAb6zYi42n4d1ETcatFXazGKzA+aW7fg==
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.28.1.tgz#b173826abdc645419c3c7ac77e2d9128286a7a79"
+  integrity sha512-p/GD4E8oYRjg3kjdKrnMb0s4PzXgJF42e0MF4H0+ACyK/kIlFRp3e0fzOleIG+wBBm6MM3XQrbpe7soEA+vJIA==
 
 escalade@^3.1.1, escalade@^3.2.0:
   version "3.2.0"
