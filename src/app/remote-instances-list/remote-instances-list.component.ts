@@ -82,24 +82,24 @@ export class RemoteInstancesListComponent implements OnInit {
     }
   }
 
-  async disableHealthAlerts(node: NodeInstance) {
+  async disableHealthAlerts(node: NodeInstance, category: string) {
     const text = `Deleting the health alerts will also delete any changes that may have been manually made to it. Aure you sure?`;
     if (confirm(text)) {
       try {
-        const res = await this.remoteInstancesListService.putHealthAlerts(node, false);
+        const res = await this.remoteInstancesListService.putHealthAlerts(node, false, category);
         const oriNode = this.allInstances?.find((v, i) => v.name === node.name );
-        if (oriNode) oriNode.health_alerts_state = 0;
+        if (oriNode) oriNode.health_alerts_status[category] = 0;
       } catch (err) {
         return;
       }
     }
   }
 
-  async enableHealthAlerts(node: NodeInstance) {
+  async enableHealthAlerts(node: NodeInstance, category: string) {
     try {
-      const res = await this.remoteInstancesListService.putHealthAlerts(node, true);
+      const res = await this.remoteInstancesListService.putHealthAlerts(node, true, category);
       const oriNode = this.allInstances?.find((v, i) => v.name === node.name );
-      if (oriNode) oriNode.health_alerts_state = 1;
+      if (oriNode) oriNode.health_alerts_status[category] = 1;
     } catch (err) {
       return;
     }

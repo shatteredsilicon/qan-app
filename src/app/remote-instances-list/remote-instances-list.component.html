@@ -21,27 +21,63 @@
         <td>{{ instance.services?.length }}</td>
         <td>
           <a
-            *ngIf="instance.health_alerts_state === 1"
+            *ngIf="instance.health_alerts_status?.['mysql'] === 1"
             href="javascript:void(0)"
             title="Enabled"
-            (click)="disableHealthAlerts(instance);"
+            (click)="disableHealthAlerts(instance, 'mysql');"
+            class="alert-switch"
           >
+            <span><small>MySQL</small></span>
             <i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>
           </a>
           <a
-            *ngIf="instance.health_alerts_state === 2"
+            *ngIf="instance.health_alerts_status?.['mysql'] === 2"
             href="javascript:void(0)"
             title="One or more health alerts are not enabled, consider re-trigger the switch to enable them"
-            (click)="disableHealthAlerts(instance);"
+            (click)="disableHealthAlerts(instance, 'mysql');"
+            class="alert-switch"
           >
+            <span><small>MySQL</small></span>
             <i class="fa fa-toggle-on fa-lg text-warning" aria-hidden="true"></i>
           </a>
           <a
-            *ngIf="!instance.health_alerts_state"
+            *ngIf="!instance.health_alerts_status?.['mysql']"
             href="javascript:void(0)"
             title="Disabled"
-            (click)="enableHealthAlerts(instance);"
+            (click)="enableHealthAlerts(instance, 'mysql');"
+            class="alert-switch"
           >
+            <span><small>MySQL</small></span>
+            <i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>
+          </a>
+          <a
+            *ngIf="instance.health_alerts_status?.['mongodb'] === 1"
+            href="javascript:void(0)"
+            title="Enabled"
+            (click)="disableHealthAlerts(instance, 'mongodb');"
+            class="alert-switch"
+          >
+            <span><small>MongoDB</small></span>
+            <i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>
+          </a>
+          <a
+            *ngIf="instance.health_alerts_status?.['mongodb'] === 2"
+            href="javascript:void(0)"
+            title="One or more health alerts are not enabled, consider re-trigger the switch to enable them"
+            (click)="disableHealthAlerts(instance, 'mongodb');"
+            class="alert-switch"
+          >
+            <span><small>MongoDB</small></span>
+            <i class="fa fa-toggle-on fa-lg text-warning" aria-hidden="true"></i>
+          </a>
+          <a
+            *ngIf="!instance.health_alerts_status?.['mongodb']"
+            href="javascript:void(0)"
+            title="Disabled"
+            (click)="enableHealthAlerts(instance, 'mongodb');"
+            class="alert-switch"
+          >
+            <span><small>MongoDB</small></span>
             <i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>
           </a>
         </td>
